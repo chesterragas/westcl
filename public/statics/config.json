@@ -1,0 +1,13 @@
+{
+  "appTitle": "West Central Lodge",
+  "appVersion": "v0.1",
+  "appBuild": "190624",
+  "frameworkVersion": "v0.1",
+  "colorPrimary": "#de001a",
+  "colorSecondary": "#de001a",
+  "colorAccent": "#b50015",
+  "staticPagePadding": true,
+  "staticBoxedLayout": true,
+  "layoutLeftDrawerStartsOpen": true,
+  "layoutRightDrawerStartsOpen": true
+}

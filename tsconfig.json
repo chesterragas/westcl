@@ -1,0 +1,25 @@
+{
+  "extends": "@quasar/app/tsconfig-preset",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "resolveJsonModule": true,
+   
+    "lib": ["es5", "es6", "dom"],
+  },
+  
+  "appTitle": "West Central Lodge",
+  "appVersion": "v0.1",
+  "appBuild": "190624",
+  "frameworkVersion": "v0.1",
+  "colorPrimary": "#de001a",
+  "colorSecondary": "#de001a",
+  "colorAccent": "#b50015",
+  "staticPagePadding": true,
+  "staticBoxedLayout": true,
+  "layoutLeftDrawerStartsOpen": true,
+  "layoutRightDrawerStartsOpen": true,
+  
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.vue", "src/layouts/**/*.vue"]
+}
+
+

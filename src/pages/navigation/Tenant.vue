@@ -20,7 +20,9 @@
       >
     </div>
   </div>
-
+ <div class="q-mx-md q-mt-md text-h6">
+    Total: {{ dueTotal }}
+  </div>
   <div class="row justify-around q-mt-sm">
     <div class="col-12 col-md-2">
       <q-scroll-area style="height: 650px; max-width: 350px">
@@ -75,9 +77,7 @@
               </q-item-section>
             </q-item>
           </q-list>
-          <div class="absolute-bottom-center q-mt-xl text-h6">
-            Total: {{ dueTotal }}
-          </div>
+         
         </div>
       </q-scroll-area>
     </div>
@@ -390,7 +390,7 @@
                 style="height: 420px"
                 :dense="$q.screen.lt.md"
                 title=""
-                :rows="historylist"
+                :rows="RentList"
                 :columns="columnsOverall"
                 :filter="filter"
                 :rows-per-page-options="[0]"
@@ -707,7 +707,7 @@
 <script lang="ts">
 import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
-import { Bill, Property, rowdata, TenantDetails } from "src/model";
+import { Bill, Property, rowdata, TenantDetails, RentAmount } from "src/model";
 import { db, snapshotToArray, storage } from "boot/firebase";
 
 const columns = [
@@ -740,23 +740,23 @@ const columns = [
 
 const columnsOverall = [
   {
-    name: "paymentdate",
+    name: "updateDate",
     label: "Date",
-    field: (row: { paymentdate: any }) => row.paymentdate,
+    field: (row: { updateDate: any }) => row.updateDate,
     align: "left",
     sortable: true,
     format: (val: any) => `${val}`,
   },
   {
-    name: "amount",
+    name: "rentAmount",
     label: "Amount",
-    field: "amount",
+    field: "rentAmount",
     align: "left",
   },
   {
-    name: "tenant",
-    label: "Tenant",
-    field: "tenant",
+    name: "bankAccount",
+    label: "Bank Account",
+    field: "bankAccount",
     align: "left",
   },
 ];
@@ -773,6 +773,7 @@ export default {
     const spouseDetails: Ref<TenantDetails> = ref(new TenantDetails());
     const bill: Ref<Bill> = ref(new Bill());
     const property: Ref<Property> = ref(new Property());
+    const rentamount: Ref<RentAmount> = ref(new RentAmount());
     const loading = ref(false);
     const addTenant = ref(false);
     const addBill = ref(false);
@@ -786,6 +787,7 @@ export default {
     property.value = store.getters.getProperty;
     const tenants: Ref<any[]> = ref([]);
     const Bills: Ref<any[]> = ref([]);
+    const RentAmounts: Ref<any[]> = ref([]);
     const selectedfile = ref();
     const powerBillTotal = ref(0);
     const waterBillTotal = ref(0);
@@ -879,7 +881,15 @@ export default {
         Bills.value = snapshotToArray(resp);
       });
 
-    function arr_diff(a1: any[], a2: any[]) {
+     db.ref("M_PropertyRent/")
+       .orderByChild("propertyNo")
+      .equalTo(property.value.propertyNo)
+      .on("value", (resp) => {
+        RentAmounts.value = snapshotToArray(resp);
+      });
+
+
+      function arr_diff(a1: any[], a2: any[]) {
       var a = [],
         diff = [];
 
@@ -959,6 +969,10 @@ export default {
       });
 
       return internetbill;
+    });
+
+    const RentList = computed(() => {
+      return RentAmounts.value;
     });
 
     function tenantModal() {
@@ -1215,6 +1229,8 @@ export default {
       internetFilter: ref(""),
       internetBillTotal,
       filter: ref(""),
+
+      RentList,
 
       renttotal,
       yesno: ["Yes", "No"],

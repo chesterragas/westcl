@@ -8,7 +8,7 @@
           class="glossy"
           color="teal"
           icon="add"
-          @click="showmodal"
+          @click="AddModal"
           >Add Property</q-btn
         >
       </div>
@@ -58,10 +58,11 @@
     </div>
   </q-page>
 
-  <q-dialog v-model="add" v-if="add">
+  <q-dialog v-model="modalshow" v-if="modalshow">
     <q-card style="width: 700px; max-width: 80vw">
       <q-card-section>
-        <div class="text-h6">Add New Property</div>
+        <div class="text-h6" v-if="!isUpdate">Add New Property</div>
+        <div class="text-h6" v-if="isUpdate">Update Property</div>
       </q-card-section>
       <q-card-section>
         <form @submit="AddProperty">
@@ -137,7 +138,7 @@
               ></q-input>
             </div>
           </div>
-          <div class="row justify-around q-mt-md">
+          <div class="row justify-around q-mt-md" v-if="!isUpdate">
             <div class="col-12 col-md-5">
               <q-input
                 v-model="rentamount.rentAmount"
@@ -221,7 +222,7 @@ export default {
     let house: Ref<any[]> = ref([]);
     const loading = ref(false);
     let property: Ref<Property> = ref(new Property());
-    let rentamount: Ref<RentAmount> = ref(new RentAmount());
+    const rentamount: Ref<RentAmount> = ref(new RentAmount());
     const hcount = computed(() => {
       db.ref("M_Property/").on("value", (resp) => {
         house.value = snapshotToArray(resp);
@@ -237,21 +238,36 @@ export default {
     });
 
     const add = ref(false);
+    const modalshow = ref(false);
     const isUpdate = ref(false);
     const keydata = ref("");
     const filter = ref("");
     function showmodal() {
-      add.value = true;
+      // add.value = true;
+      // isUpdate.value = false;
+      modalshow.value = true;
       loading.value = true;
     }
+
+
+    function AddModal(){
+      add.value = true;
+      isUpdate.value = false;
+      // property = ref(new Property());
+      showmodal();
+    }
+
     function AddProperty() {
       add.value = false;
-
+debugger;
       //db.ref("M_Property/").push(property.value);
-      var pushKey = db.ref("M_Property/").push(property.value);
-      
-      console.log(rentamount.value);
-      console.log(pushKey.key);
+      var pushProperty = db.ref("M_Property/").push(property.value);
+      if(pushProperty.key != null){
+        rentamount.value.propertyNo = property.value.propertyNo;
+        rentamount.value.propertyKey = pushProperty.key;
+      }
+      var pushPropertyRent = db.ref("M_PropertyRent/").push(rentamount.value);
+     
       house = ref([]);
       ResetProperty();
       loading.value = false;
@@ -264,6 +280,7 @@ export default {
     }
 
     function EditProperty(key: string) {
+      add.value = false;
       isUpdate.value = true;
       keydata.value = key;
       property.value = house.value.filter((x) => x.key == key)[0];
@@ -316,6 +333,8 @@ export default {
       add.value = false;
       isUpdate.value = false;
       property.value = new Property();
+      rentamount.value = new RentAmount();
+      modalshow.value = false;
     }
 
     return {
@@ -329,6 +348,8 @@ export default {
       isUpdate,
       AddProperty,
       showmodal,
+      AddModal,
+      modalshow,
       filter,
       EditProperty,
       UpdateProperty,

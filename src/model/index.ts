@@ -2,9 +2,12 @@
 import { auth } from "boot/firebase";
 
 export class RentAmount{
+  propertyKey = "";
   propertyNo = "";
   rentAmount =0;
   bankAccount = "";
+  updateDate = new Date().toLocaleDateString();
+  updateUser = auth.currentUser?.email;
 }
 
 export class Property {

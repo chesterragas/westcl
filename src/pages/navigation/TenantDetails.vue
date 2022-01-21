@@ -1,7 +1,8 @@
 <template>
   <div v-if="!loading"></div>
+  
   <div class="row">
-    <div class="col-12 col-md-12 q-mx-md q-mt-md">
+    <div class="col-md-11 q-pl-md q-pt-md">
       <q-btn
         size="md"
         class="glossy"
@@ -11,6 +12,17 @@
         >Back</q-btn
       >
     </div>
+     <div class="col-md-1 q-pl-md q-pt-md text-center">
+        <q-btn
+            size="md"
+            class="glossy"
+            color="red"
+            icon="delete"
+            @click="confirm"
+            >Delete</q-btn
+          >
+    </div>
+   
   </div>
 
   <div class="row">
@@ -25,14 +37,7 @@
             @click="isEdit = true"
             >Edit</q-btn
           >
-           <q-btn
-            size="md"
-            class="glossy"
-            color="red"
-            icon="delete"
-            @click="confirm"
-            >Delete</q-btn
-          >
+          
           <q-btn
             size="md"
             class="glossy"

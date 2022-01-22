@@ -259,8 +259,6 @@ export default {
 
     function AddProperty() {
       add.value = false;
-debugger;
-      //db.ref("M_Property/").push(property.value);
       var pushProperty = db.ref("M_Property/").push(property.value);
       if(pushProperty.key != null){
         rentamount.value.propertyNo = property.value.propertyNo;

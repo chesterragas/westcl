@@ -95,7 +95,7 @@ export class Bill{
   propertyNo = "";
   providerType = "";
   providerName = "";
-  dueDate = new Date().toLocaleDateString();
+  dueDate = "";
   dueAmount = "0";
   paidAmount = "0";
   fileUpload = "";

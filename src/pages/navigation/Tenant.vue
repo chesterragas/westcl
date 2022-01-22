@@ -20,7 +20,7 @@
       >
     </div>
   </div>
- <div class="q-mx-md q-mt-md text-h6">
+  <div class="q-mx-md q-mt-md text-h6">
     Total: {{ dueTotal }}
   </div>
   <div class="row justify-around q-mt-sm">
@@ -296,8 +296,8 @@
                 @click="billModal('Internet', property.internetProvider)"
               >
                 <q-icon name="attach_money" />
-                <div>Add Bill</div></q-btn
-              >
+                <div>Add Bill</div>
+                </q-btn>
             </q-card-actions>
             <div class="q-pa-md">
               <q-table
@@ -375,9 +375,12 @@
                   <div class="text-subtitle2"> </div>
                 </div>
                 <div class="col-6 col-md-6">
-                  <div class="text-subtitle2">{{ propertyRentAmount }}</div>
-                  <div class="text-subtitle2">???????</div>
-                  <div class="text-subtitle2"></div>
+      
+                  <div class="text-subtitle2">{{ RentAmountBank.rentAmount }}</div>
+                  <div class="text-subtitle2">{{ RentAmountBank.bankAccount }}</div>
+                 
+                  <div class="text-subtitle2">
+                  </div>
                 </div>
               </div>
             </q-card-section>
@@ -602,10 +605,11 @@
         <form @submit="AddBill">
           <div class="row justify-around">
             <div class="col-12 col-md-5">
-              <q-input
-                v-model="bill.dueDate"
+
+          
+            <q-input
+                v-model="DDate"
                 label="Due Date"
-                mask="####-##-##"
                 filled
               >
                 <template v-slot:append>
@@ -709,15 +713,18 @@ import { computed, Ref, ref } from "vue";
 import { useStore } from "vuex";
 import { Bill, Property, rowdata, TenantDetails, RentAmount } from "src/model";
 import { db, snapshotToArray, storage } from "boot/firebase";
-
+import { openURL, useQuasar, date } from "quasar";
+import { get } from "http";
+import { log } from "console";
 const columns = [
   {
     name: "dueDate",
     label: "Date",
     field: (row: { dueDate: any }) => row.dueDate,
-    align: "left",
+    align: "right",
     sortable: true,
-    format: (val: any) => `${val}`,
+    //format: (val: any) => `${val}`,
+    format: (val: any) => date.formatDate(val, 'DD-MM-YYYY')
   },
   {
     name: "dueAmount",
@@ -760,9 +767,7 @@ const columnsOverall = [
     align: "left",
   },
 ];
-import { openURL, useQuasar } from "quasar";
-import { get } from "http";
-import { log } from "console";
+
 export default {
   name: "Tenant",
 
@@ -799,8 +804,11 @@ export default {
     const powerdue: Ref<Bill> = ref(new Bill());
     const waterdue: Ref<Bill> = ref(new Bill());
     const internetdue: Ref<Bill> = ref(new Bill());
+    const RentAmountBank : Ref<RentAmount> = ref(new RentAmount());
     const propertyRentAmount = ref(0);
     const dueTotal = ref(0);
+    
+
     db.ref("M_TenantDetails/")
       .orderByChild("propertyNo")
       .equalTo(property.value.propertyNo)
@@ -879,17 +887,18 @@ export default {
       .equalTo(property.value.propertyNo)
       .on("value", (resp) => {
         Bills.value = snapshotToArray(resp);
-      });
+    });
 
-     db.ref("M_PropertyRent/")
+    db.ref("M_PropertyRent/")
        .orderByChild("propertyNo")
       .equalTo(property.value.propertyNo)
-      .on("value", (resp) => {
+      .on("value", (resp) => { 
         RentAmounts.value = snapshotToArray(resp);
-      });
+        console.log();
+       RentAmountBank.value = RentAmounts.value[RentAmounts.value.length - 1];
+    });
 
-
-      function arr_diff(a1: any[], a2: any[]) {
+    function arr_diff(a1: any[], a2: any[]) {
       var a = [],
         diff = [];
 
@@ -927,9 +936,12 @@ export default {
       let powerbill = Bills.value.filter(
         (x) => x.providerType == "Power" && x.isDeleted == "false"
       );
+      console.log("bll");
+      
       if (powerbill.length > 0) {
         powerdue.value = powerbill[powerbill.length - 1];
       }
+      console.log(powerdue.value);
       powerBillTotal.value = 0;
       powerbill.forEach((element) => {
         powerBillTotal.value += parseInt(element.dueAmount);
@@ -1011,6 +1023,7 @@ export default {
     }
     function AddBill() {
       if (isUpdate.value == false) {
+        bill.value.dueDate = date.formatDate(bill.value.dueDate, 'DD/MM/YYYY');
         db.ref("M_Bill").push(bill.value);
         try {
           const storerage = storage
@@ -1201,7 +1214,10 @@ export default {
       return weekday;
     }
 
-    return {
+    const DDate = computed(() => {
+      return date.formatDate(bill.value.dueDate, 'DD/MM/YYYY')
+    });
+    return {DDate,
       closeBill,
       historylist,
       gotoTenantDetails,
@@ -1231,6 +1247,7 @@ export default {
       filter: ref(""),
 
       RentList,
+      RentAmountBank,
 
       renttotal,
       yesno: ["Yes", "No"],

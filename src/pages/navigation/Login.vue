@@ -3,7 +3,7 @@
     <q-card style="max-width: 300px">
       <div class="q-pa-md">
         <q-img src="statics/Capture.PNG" />
-        <h5 class="login-title">Logins</h5>
+        <h5 class="login-title">Login</h5>
         <div class="row gutter-md">
           <div class="col-xs-12">
             <q-input

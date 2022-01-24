@@ -169,7 +169,7 @@
                 </template>
                 <template v-slot:bottom>
                   <div class="absolute-bottom-center">
-                    Total: {{ powerBillTotal }}
+                    Due: {{ powerBillTotal }}
                   </div>
                 </template>
               </q-table>
@@ -263,7 +263,7 @@
 
                 <template v-slot:bottom>
                   <div class="absolute-bottom-center">
-                    Total: {{ waterBillTotal }}
+                    Due: {{ waterBillTotal }}
                   </div>
                 </template>
               </q-table>
@@ -357,7 +357,7 @@
 
                 <template v-slot:bottom>
                   <div class="absolute-bottom-center">
-                    Total: {{ internetBillTotal }}
+                    Due: {{ internetBillTotal }}
                   </div>
                 </template>
               </q-table>
@@ -790,7 +790,7 @@ const columns = [
     name: "dueDate",
     label: "Date",
     field: (row: { dueDate: any }) => row.dueDate,
-    align: "right",
+    align: "left",
     sortable: true,
     //format: (val: any) => `${val}`,
     format: (val: any) => date.formatDate(val, 'DD-MM-YYYY')
@@ -1043,7 +1043,7 @@ export default {
     });
 
     const RentList = computed(() => {
-      return RentAmounts.value;
+      return RentAmounts.value.reverse();
     });
 
     function tenantModal() {

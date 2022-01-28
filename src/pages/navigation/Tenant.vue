@@ -143,14 +143,7 @@
                         no-caps
                         @click="editbill(props.row)"
                       ></q-btn>
-                      <q-btn
-                        class="glossy"
-                        color="red"
-                        icon="delete"
-                        size="sm"
-                        no-caps
-                        @click="confirm(props.row)"
-                      ></q-btn>
+                      
                     </q-td>
                   </q-tr>
                 </template>
@@ -249,14 +242,7 @@
                         no-caps
                         @click="editbill(props.row)"
                       ></q-btn>
-                      <q-btn
-                        class="glossy"
-                        color="red"
-                        icon="delete"
-                        size="sm"
-                        no-caps
-                        @click="confirm(props.row)"
-                      ></q-btn>
+                      
                     </q-td>
                   </q-tr>
                 </template>
@@ -343,14 +329,7 @@
                         no-caps
                         @click="editbill(props.row)"
                       ></q-btn>
-                      <q-btn
-                        class="glossy"
-                        color="red"
-                        icon="delete"
-                        size="sm"
-                        no-caps
-                        @click="confirm(props.row)"
-                      ></q-btn>
+                      
                     </q-td>
                   </q-tr>
                 </template>
@@ -364,7 +343,6 @@
             </div>
           </div>
         </div>
-
         <div class="col-12 col-md-3">
           <div class="my-card">
             <q-card-section>
@@ -616,14 +594,15 @@
                 label="Due Date"
                 filled
               >
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy>
-                      <q-date minimal v-model="bill.dueDate" type="date">
+               <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
+                    <q-popup-proxy v-if="closethis">
+                      <q-date minimal v-model="bill.dueDate" type="date" @click="closeEndDate()">
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
                 </template>
+                
               </q-input>
             </div>
             <div class="col-12 col-md-5">
@@ -667,7 +646,26 @@
                 <q-icon name="file_upload" />Upload File</q-btn
               >
             </div>
+           
+         
           </div>
+          <div class="row justify-around q-mt-md">
+            <div class="col-12 col-md-6">
+              <q-btn
+                style="width: 100%"
+                class="glossy"
+                color="red"
+                type="button"
+                @click="confirm"
+              >
+                <q-icon name="delete" />Delete</q-btn
+              >
+            </div>
+          </div>
+
+           
+
+    
 
           <div class="row justify-around q-mt-md" v-if="bill.fileUpload != ''">
             <div class="col-12 col-md-6">
@@ -797,7 +795,7 @@ const columns = [
   },
   {
     name: "dueAmount",
-    label: "Amount",
+    label: "Due",
     field: "dueAmount",
     align: "left",
   },
@@ -1004,7 +1002,7 @@ export default {
       }
       powerBillTotal.value = 0;
       powerbill.forEach((element) => {
-        powerBillTotal.value += parseInt(element.dueAmount);
+        powerBillTotal.value += parseInt(element.dueAmount)  - parseInt(element.paidAmount);
       });
       return powerbill;
     });
@@ -1018,7 +1016,7 @@ export default {
       }
       waterBillTotal.value = 0;
       waterbill.forEach((element) => {
-        waterBillTotal.value += parseInt(element.dueAmount);
+        waterBillTotal.value += parseInt(element.dueAmount)  - parseInt(element.paidAmount);
       });
       return waterbill;
     });
@@ -1036,7 +1034,7 @@ export default {
 
       internetBillTotal.value = 0;
       internetbill.forEach((element) => {
-        internetBillTotal.value += parseInt(element.dueAmount);
+        internetBillTotal.value += parseInt(element.dueAmount)  - parseInt(element.paidAmount);
       });
 
       return internetbill;
@@ -1053,6 +1051,7 @@ export default {
     function ShowBillModal() {
       addBill.value = true;
       loading.value = false;
+      closethis.value = true;
     }
     function billModal(type: string, providerName: string) {
       bill.value = new Bill();
@@ -1175,14 +1174,15 @@ export default {
         position: "top",
       });
     }
-    function confirm(row: any) {
+    function confirm() {
+      console.log(bill.value);
       $q.dialog({
         title: "Confirm",
         message: "Delete selected bill?",
         cancel: true,
         persistent: true,
       }).onOk(() => {
-        deletebill(row);
+        deletebill(bill.value);
       });
     }
     function gotoTenantDetails(tenant: any) {

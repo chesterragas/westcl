@@ -87,7 +87,7 @@
           <div class="row justify-around q-mt-md">
             <div class="col-12 col-md-5">
               <q-input
-                v-model="property.agentName"
+                v-model="rentamount.agentName"
                 filled
                 required
                 label="Agent/Landlord Name"

@@ -2,6 +2,7 @@
 import { auth } from "boot/firebase";
 
 export class RentAmount{
+  agentName = "";
   propertyKey = "";
   propertyNo = "";
   rentAmount =0;
@@ -12,7 +13,6 @@ export class RentAmount{
 }
 
 export class Property {
-  agentName = "";
   company = "";
   contactNo = "";
   officeAddress = "";
@@ -55,6 +55,7 @@ export class TenantDetails{
   isActive = "true";
   weekDayDue = "";
   bankAccount = "";
+  startDate = "";
   createDate = new Date().toLocaleDateString();
   createUser = auth.currentUser?.email;
   updateDate = new Date().toLocaleDateString();

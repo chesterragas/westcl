@@ -493,6 +493,36 @@
 
           <div class="row justify-around q-mt-md">
             <div class="col-12 col-md-5">
+               <q-input
+                v-model="TDate"
+                label="Due Date"
+                filled
+              >
+               <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
+                    <q-popup-proxy v-if="closethis">
+                      <q-date minimal v-model="tenantDetails.startDate" type="date" @click="closeEndDate()">
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+                
+              </q-input>
+            </div>
+
+            <div class="col-12 col-md-5">
+              <q-select
+                filled
+                v-model="tenantDetails.weekDayDue"
+                label="Weekly Due Day"
+                :options="weekdays"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="row justify-around q-mt-md">
+            <div class="col-12 col-md-5">
               <q-select
                 filled
                 v-model="tenantDetails.coupleTenancy"
@@ -503,10 +533,9 @@
             </div>
 
             <div class="col-12 col-md-5">
-              <!-- <q-select filled label="Couple Tenancy" :options="yesno" /> -->
+              
             </div>
           </div>
-
           <div v-if="isCouple">
             <q-card-section>
               <div class="text-h7 q-mt-md">Spouse details</div>
@@ -649,7 +678,7 @@
            
          
           </div>
-          <div class="row justify-around q-mt-md">
+          <div class="row justify-around q-mt-md" v-if="isUpdate">
             <div class="col-12 col-md-6">
               <q-btn
                 style="width: 100%"
@@ -1052,6 +1081,7 @@ export default {
       addBill.value = true;
       loading.value = false;
       closethis.value = true;
+   
     }
     function billModal(type: string, providerName: string) {
       bill.value = new Bill();
@@ -1060,6 +1090,7 @@ export default {
       bill.value.providerName = providerName;
       addBill.value = true;
       loading.value = false;
+      isUpdate.value = false;
     }
     function RentAmountModal(){
       newRentAmountBank.value = new RentAmount();
@@ -1072,7 +1103,7 @@ export default {
       tenantDetails.value.currentDue = tenantDetails.value.weeklyAmountDue;
       var d = new Date();
       var n = d.getDay();
-      tenantDetails.value.weekDayDue = getweekname(n);
+      //tenantDetails.value.weekDayDue = getweekname(n);
       db.ref("M_TenantDetails").push(tenantDetails.value); //For Firebase add row ...working
       loading.value = false;
       addTenant.value = false;
@@ -1105,7 +1136,8 @@ export default {
           color: "green",
           position: "top",
         });
-      } else {
+      } 
+      else {
         db.ref("M_Bill/").child(selectedrow.value.key).update(bill.value);
         try {
           const storerage = storage
@@ -1289,6 +1321,10 @@ export default {
     const RDDate = computed(() => {
       return date.formatDate(newRentAmountBank.value.rentDate, 'DD/MM/YYYY')
     });
+    const TDate = computed(() => {
+      return date.formatDate(tenantDetails.value.startDate, 'DD/MM/YYYY')
+    });
+    
 
     const closethis = ref(true);
     function closeEndDate(){
@@ -1320,6 +1356,7 @@ export default {
       closeEndDate,
       DDate,
       RDDate,
+      TDate,
       closeBill,
       historylist,
       gotoTenantDetails,
@@ -1367,6 +1404,7 @@ export default {
       bill,
       billModal,
       AddBill,
+      isUpdate,
 
       pagination: ref({
         sortBy: "paymentdate",
@@ -1379,6 +1417,15 @@ export default {
       internetdue,
       propertyRentAmount,
       dueTotal,
+      weekdays: ref([
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday",
+      ]),
     };
   },
 };

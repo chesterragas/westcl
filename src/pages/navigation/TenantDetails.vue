@@ -826,6 +826,7 @@ export default {
       setDueDay,
       weekdaysdue,
       weekdays: ref([
+        "",
         "Monday",
         "Tuesday",
         "Wednesday",

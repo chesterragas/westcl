@@ -124,6 +124,16 @@
             ></q-input>
           </div>
         </div>
+         <div class="row">
+          <div class="col-12 col-md-10 q-mt-xs q-mx-md">
+            <q-input
+              filled
+              label="Starting Date"
+              v-model="tenant.startDate"
+              :readonly="!isEdit"
+            ></q-input>
+          </div>
+        </div>
         <div class="row">
           <div class="col-12 col-md-10 q-mt-xs q-mx-md">
             <q-select
@@ -309,9 +319,10 @@
       <div class="q-pa-md">
         <q-card>
           <q-date
-            v-model="date"
+            v-model="datevar"
             :events="payday.value"
-            :event-color="(date) => (pay.includes(date) ? 'orange' : 'yellow')"
+            :event-color="(date) => (pay.includes(datevar) ? 'orange' : 'yellow')"
+            today-btn
             title="Weekly Rent Schedule"
             subtitle="West Central Lodge"
           />
@@ -447,7 +458,7 @@
 
 <script lang="ts">
 import { computed, Ref, ref } from "vue";
-import { openURL, useQuasar } from "quasar";
+import { openURL, useQuasar, date } from "quasar";
 import { useStore } from "vuex";
 import {
   Payment,
@@ -457,6 +468,7 @@ import {
 } from "src/model";
 import { db, snapshotToArray, auth, storage } from "boot/firebase";
 import { count } from "console";
+
 const columns = [
   {
     name: "paymentdate",
@@ -501,7 +513,8 @@ export default {
     const loading = ref(true);
     const persistent = ref(false);
     const store = useStore();
-    const date = ref("");
+    const datevar = ref("");
+    const todayDate = ref(date.formatDate(new Date(), 'DD/MM/YYYY'));
     const weekdaysdue = ref("");
     const events = ref([""]);
     const pay = ref([""]);
@@ -514,8 +527,9 @@ export default {
     const selectedfileName = ref("");
     const isEdit = ref(false);
     const couple = ref("");
+    console.log(todayDate.value);
     tenant.value = store.getters.getTenant;
-
+    tenant.value.startDate = date.formatDate(tenant.value.startDate, 'DD/MM/YYYY');
     if (tenant.value != null) {
       couple.value = tenant.value.coupleTenancy;
     }
@@ -528,7 +542,7 @@ export default {
         ? "0" + (today.getMonth() + 1)
         : today.getMonth() + 1;
     var yyyy = today.getFullYear();
-    date.value = yyyy + "-" + mm + "-" + dd;
+    datevar.value = yyyy + "-" + mm + "-" + dd;
     const payday = computed(() => {
       if (loading) {
         showdue();
@@ -581,11 +595,11 @@ export default {
     }
 
     function AddRentDate() {
-      events.value.push(date.value);
-      pay.value.push(date.value);
+      events.value.push(datevar.value);
+      pay.value.push(datevar.value);
       persistent.value = false;
       payment.value.bankaccount = tenant.value.bankAccount;
-      payment.value.paymentdate = date.value;
+      payment.value.paymentdate = datevar.value;
       payment.value.tenantid = tenant.value.key;
       if (!isUpdate.value) {
         db.ref("M_Payments/").push(payment.value);
@@ -605,7 +619,7 @@ export default {
     }
     function removedate() {
       paymenthistory.value = paymenthistory.value.filter(
-        (x) => x.paymentdate != date.value
+        (x) => x.paymentdate != datevar.value
       );
       persistent.value = false;
       loading.value = true;
@@ -638,7 +652,7 @@ export default {
     }
 
     function reset() {
-      date.value = "";
+      datevar.value = "";
       isUpdate.value = false;
       loading.value = false;
     }
@@ -767,24 +781,24 @@ export default {
     }
 
     function showmodal() {
-      if (date.value != "") {
+      if (datevar.value != "") {
         loading.value = false;
         persistent.value = true;
 
         checker = paymenthistory.value.filter(
-          (x) => x.paymentdate == date.value && x.isDeleted != "true"
+          (x) => x.paymentdate == datevar.value && x.isDeleted != "true"
         );
         if (checker.length > 0) {
           payment.value = checker[0];
-          date.value = payment.value.paymentdate;
+          datevar.value = payment.value.paymentdate;
           isUpdate.value = true;
         } else {
           isUpdate.value = false;
           payment.value = new Payment();
-          payment.value.paymentdate = date.value;
+          payment.value.paymentdate = datevar.value;
         }
       } else {
-        date.value = "";
+        datevar.value = "";
       }
     }
 
@@ -795,7 +809,6 @@ export default {
       checker = paymenthistory.value.filter(
         (x) => x.paymentdate == row.paymentdate
       );
-      console.log(checker);
       if (checker.length > 0) {
         payment.value = checker[0];
         isUpdate.value = true;
@@ -839,7 +852,8 @@ export default {
       loading,
       showmodal,
       splitterModel: 50,
-      date,
+      datevar,
+      todayDate,
       events,
       persistent,
       AddRentDate,

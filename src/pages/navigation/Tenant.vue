@@ -350,15 +350,13 @@
                 <div class="col-6 col-md-6">
                   <div class="text-subtitle2">Rent Amount:</div>
                   <div class="text-subtitle2">Bank Account:</div>
-                  <div class="text-subtitle2"> </div>
+                  <div class="text-subtitle2">Current Agent </div>
                 </div>
                 <div class="col-6 col-md-6">
       
                   <div class="text-subtitle2">{{ RentAmountBank.rentAmount }}</div>
                   <div class="text-subtitle2">{{ RentAmountBank.bankAccount }}</div>
-                 
-                  <div class="text-subtitle2">
-                  </div>
+                  <div class="text-subtitle2">{{ RentAmountBank.agentName }}</div>
                 </div>
               </div>
             </q-card-section>
@@ -495,10 +493,11 @@
             <div class="col-12 col-md-5">
                <q-input
                 v-model="TDate"
-                label="Due Date"
+                label="Date"
                 filled
+                
               >
-               <template v-slot:append>
+                <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
                     <q-popup-proxy v-if="closethis">
                       <q-date minimal v-model="tenantDetails.startDate" type="date" @click="closeEndDate()">
@@ -506,7 +505,6 @@
                     </q-popup-proxy>
                   </q-icon>
                 </template>
-                
               </q-input>
             </div>
 
@@ -925,7 +923,7 @@ export default {
               if (element.weekDayDue != "") {
                 let data = snapshotToArray(returndata);
                 let paydate: any[] = [];
-                
+               
                 data.forEach((paidDay) => {
                   paydate.push(paidDay.paymentdate);
                   if(paidDay.amount != element.weeklyAmountDue){
@@ -936,8 +934,8 @@ export default {
                 let num = getnum(element.weekDayDue);
                 let paymentdays = getalldays(num);
                 paymentdays = paymentdays.filter(
-                  (x) => new Date(x) >= new Date(element.createDate)
-                );
+                  (x) => new Date(x) >= new Date(element.startDate)
+                );console.log(paymentdays);
                 let compare = arr_diff(paymentdays, paydate);
 
                 let currentdue = 0;
@@ -1101,6 +1099,7 @@ export default {
       tenantDetails.value.propertyNo = property.value.propertyNo;
       tenantDetails.value.spouse = spouseDetails.value;
       tenantDetails.value.currentDue = tenantDetails.value.weeklyAmountDue;
+     
       var d = new Date();
       var n = d.getDay();
       //tenantDetails.value.weekDayDue = getweekname(n);
@@ -1207,7 +1206,6 @@ export default {
       });
     }
     function confirm() {
-      console.log(bill.value);
       $q.dialog({
         title: "Confirm",
         message: "Delete selected bill?",
@@ -1230,7 +1228,7 @@ export default {
 
     function getalldays(num: number) {
       let days = [];
-      var d = new Date('2021/01/01'),
+      var d = new Date(),
       year = d.getFullYear();
       d.setDate(1);
       while (d.getDay() !== num) {

@@ -957,6 +957,7 @@ export default {
     const dueTotal = ref(0);
     const DDate = ref("");
     const RDDate = ref("");
+    const closethis = ref(true);
 
     db.ref("M_TenantDetails/")
       .orderByChild("propertyNo")
@@ -1373,10 +1374,6 @@ export default {
       return weekday;
     }
 
-   
-    
-
-    const closethis = ref(true);
     function closeEndDate(item : any){
       
       if(item != ""){

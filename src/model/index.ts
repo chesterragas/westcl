@@ -7,7 +7,7 @@ export class RentAmount{
   propertyNo = "";
   rentAmount =0;
   bankAccount = "";
-  rentDate = new Date().toLocaleDateString();
+  rentDate = "";
   updateDate = new Date().toLocaleDateString();
   updateUser = auth.currentUser?.email;
 }

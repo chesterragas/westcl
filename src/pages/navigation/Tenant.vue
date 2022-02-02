@@ -377,8 +377,8 @@
                 style="height: 420px"
                 :dense="$q.screen.lt.md"
                 title=""
-                :rows="RentList"
                 :columns="columnsOverall"
+                :rows="RentList"
                 :filter="filter"
                 :rows-per-page-options="[0]"
                 v-model:pagination="pagination"
@@ -396,6 +396,33 @@
                       <q-icon name="search" />
                     </template>
                   </q-input>
+                </template>
+                <template v-slot:body="props">
+                  <q-tr :props="props">
+                    <q-td key="rentDate" :props="props">{{
+                      props.row.rentDate
+                    }}</q-td>
+                    <q-td key="agentName" :props="props">{{
+                      props.row.agentName
+                    }}</q-td>
+                    <q-td key="rentAmount" :props="props">{{
+                      props.row.rentAmount
+                    }}</q-td>
+                    <q-td key="bankAccount" :props="props">{{
+                      props.row.bankAccount
+                    }}</q-td>
+                    <q-td key="actions" :props="props">
+                      <q-btn
+                        class="glossy"
+                        color="blue"
+                        icon="edit"
+                        size="sm"
+                        no-caps
+                        @click="editRent(props.row)"
+                      ></q-btn>
+                      
+                    </q-td>
+                  </q-tr>
                 </template>
               </q-table>
             </div>
@@ -444,6 +471,7 @@
                 v-model="tenantDetails.email"
                 filled
                 label="Email"
+                type="email"
                 required
               ></q-input>
             </div>
@@ -493,14 +521,14 @@
             <div class="col-12 col-md-5">
                <q-input
                 v-model="TDate"
-                label="Date"
+                label="Starting Date"
                 filled
                 
               >
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
                     <q-popup-proxy v-if="closethis">
-                      <q-date minimal v-model="tenantDetails.startDate" type="date" @click="closeEndDate()">
+                      <q-date minimal v-model="tenantDetails.startDate" type="date" @click="closeEndDate(tenantDetails.startDate)">
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
@@ -624,7 +652,7 @@
                <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
                     <q-popup-proxy v-if="closethis">
-                      <q-date minimal v-model="bill.dueDate" type="date" @click="closeEndDate()">
+                      <q-date minimal v-model="bill.dueDate" type="date" @click="closeEndDate(bill.dueDate)">
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
@@ -753,7 +781,7 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
                     <q-popup-proxy v-if="closethis">
-                      <q-date minimal v-model="newRentAmountBank.rentDate" type="date" @click="closeEndDate()">
+                      <q-date minimal v-model="newRentAmountBank.rentDate" type="date" @click="closeEndDate(newRentAmountBank.rentDate)">
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
@@ -771,6 +799,15 @@
             </div>
           </div>
           <div class="row justify-around q-mt-md">
+          <div class="col-12 col-md-5">
+              <q-input
+                v-model="newRentAmountBank.agentName"
+                filled
+                required
+                label="Agent Name"
+                type="text"
+              ></q-input>
+            </div>
             <div class="col-12 col-md-5">
               <q-input
                 v-model="newRentAmountBank.bankAccount"
@@ -780,7 +817,7 @@
                 type="text"
               ></q-input>
             </div>
-            <div class="col-12 col-md-5"></div>
+            
           </div>
        
           <div class="row justify-around q-mt-lg">
@@ -841,12 +878,18 @@ const columns = [
 
 const columnsOverall = [
   {
-    name: "updateDate",
+    name: "rentDate",
     label: "Date",
     field: (row: { rentDate: any }) => row.rentDate,
     align: "left",
     sortable: true,
     format: (val: any) => `${val}`,
+  },
+  {
+    name: "agentName",
+    label: "Agent Name",
+    field: "agentName",
+    align: "left",
   },
   {
     name: "rentAmount",
@@ -859,6 +902,11 @@ const columnsOverall = [
     label: "Bank Account",
     field: "bankAccount",
     align: "left",
+  },
+  {
+    name: "actions",
+    label: "Actions",
+    field: "actions",
   },
 ];
 
@@ -878,6 +926,7 @@ export default {
     const addBill = ref(false);
     const updateRent = ref(false);
     const isUpdate = ref(false);
+    const isUpdateRent = ref(false);
     const isCouple = ref(false);
     const isCoupleComputed = computed(() => {
       loading.value = true;
@@ -923,7 +972,7 @@ export default {
               if (element.weekDayDue != "") {
                 let data = snapshotToArray(returndata);
                 let paydate: any[] = [];
-               
+                
                 data.forEach((paidDay) => {
                   paydate.push(paidDay.paymentdate);
                   if(paidDay.amount != element.weeklyAmountDue){
@@ -935,7 +984,8 @@ export default {
                 let paymentdays = getalldays(num);
                 paymentdays = paymentdays.filter(
                   (x) => new Date(x) >= new Date(element.startDate)
-                );console.log(paymentdays);
+                );
+                console.log(paymentdays);
                 let compare = arr_diff(paymentdays, paydate);
 
                 let currentdue = 0;
@@ -1228,7 +1278,7 @@ export default {
 
     function getalldays(num: number) {
       let days = [];
-      var d = new Date(),
+      var d = new Date(new Date().getFullYear(), 0, 1),
       year = d.getFullYear();
       d.setDate(1);
       while (d.getDay() !== num) {
@@ -1325,8 +1375,10 @@ export default {
     
 
     const closethis = ref(true);
-    function closeEndDate(){
+    function closeEndDate(item : any){
+      if(item != ""){
        closethis.value = false;
+      }
     }
     function openEndDate(){
        closethis.value = true;
@@ -1347,7 +1399,21 @@ export default {
           position: "top",
         });
     }
+
+    function ShowRentModal() {
+      updateRent.value = true;
+      loading.value = false;
+      closethis.value = true;
+    }
+
+    function editRent(row:any){
+      isUpdateRent.value = true;
+      newRentAmountBank.value = row;
+      ShowRentModal();
+    }
     return {
+      isUpdateRent,
+      editRent,
       InsertRentAmount,
       closethis,
       openEndDate,

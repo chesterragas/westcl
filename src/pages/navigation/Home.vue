@@ -138,24 +138,6 @@
               ></q-input>
             </div>
           </div>
-          <div class="row justify-around q-mt-md" v-if="!isUpdate">
-            <div class="col-12 col-md-5">
-              <q-input
-                v-model="rentamount.rentAmount"
-                filled
-                required
-                label="Rent Amount"
-              ></q-input>
-            </div>
-            <div class="col-12 col-md-5">
-              <q-input
-                filled
-                v-model="rentamount.bankAccount"
-                label="Bank Account"
-                required
-              />
-            </div>
-          </div>
           <div class="row justify-around q-mt-md">
             <div class="col-12 col-md-5">
               <q-input
@@ -171,6 +153,25 @@
                 v-model="property.tfcUnit"
                 label="TFC Unit"
                 :options="yesno"
+                required
+              />
+            </div>
+          </div>
+           <div class="row justify-around q-mt-md" v-if="!isUpdate">
+            <div class="col-12 col-md-5">
+              <q-input
+                v-model="rentamount.rentAmount"
+                filled
+                required
+                label="Rent Amount"
+                type="number"
+              ></q-input>
+            </div>
+            <div class="col-12 col-md-5">
+              <q-input
+                filled
+                v-model="rentamount.bankAccount"
+                label="Bank Account"
                 required
               />
             </div>

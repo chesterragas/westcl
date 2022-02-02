@@ -921,6 +921,7 @@ export default {
   height:715px;
 }
 
+
 .bg-yellow {
   background: #4882ff !important;
   height: 30px;

@@ -784,7 +784,7 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
                     <q-popup-proxy v-if="closethis">
-                      <q-date minimal v-model="newRentAmountBank.rentDate" type="date" @click="closeEndDate(newRentAmountBank.rentDate)">
+                      <q-date minimal v-model="newRentAmountBank.rentDate" type="date" @click="RcloseEndDate(newRentAmountBank.rentDate)">
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
@@ -955,7 +955,8 @@ export default {
     const newRentAmountBank : Ref<RentAmount> = ref(new RentAmount());
     const propertyRentAmount = ref(0);
     const dueTotal = ref(0);
-    
+    const DDate = ref("");
+    const RDDate = ref("");
 
     db.ref("M_TenantDetails/")
       .orderByChild("propertyNo")
@@ -1124,6 +1125,10 @@ export default {
       return RentAmounts.value.reverse();
     });
 
+    const TDate = computed(() => {
+      return date.formatDate(tenantDetails.value.startDate, 'DD/MM/YYYY')
+    });
+
     function tenantModal() {
       addTenant.value = true;
       loading.value = true;
@@ -1244,6 +1249,8 @@ export default {
       isUpdate.value = true;
       selectedrow.value = row;
       bill.value = row;
+      console.log(bill.value);
+      DDate.value = bill.value.dueDate;
       ShowBillModal();
     }
     function deletebill(row: any) {
@@ -1366,20 +1373,22 @@ export default {
       return weekday;
     }
 
-    const DDate = computed(() => {
-      return date.formatDate(bill.value.dueDate, 'DD/MM/YYYY')
-    });
-    const RDDate = computed(() => {
-      return date.formatDate(newRentAmountBank.value.rentDate, 'DD/MM/YYYY')
-    });
-    const TDate = computed(() => {
-      return date.formatDate(tenantDetails.value.startDate, 'DD/MM/YYYY')
-    });
+   
     
 
     const closethis = ref(true);
     function closeEndDate(item : any){
+      
       if(item != ""){
+       DDate.value = date.formatDate(item, 'DD/MM/YYYY');
+       closethis.value = false;
+      }
+    }
+
+    function RcloseEndDate(item : any){
+      
+      if(item != ""){
+       RDDate.value = date.formatDate(item, 'DD/MM/YYYY');
        closethis.value = false;
       }
     }
@@ -1412,6 +1421,7 @@ export default {
     function editRent(row:any){
       isUpdateRent.value = true;
       newRentAmountBank.value = row;
+      RDDate.value = newRentAmountBank.value.rentDate;
       ShowRentModal();
     }
     return {
@@ -1421,6 +1431,7 @@ export default {
       closethis,
       openEndDate,
       closeEndDate,
+      RcloseEndDate,
       DDate,
       RDDate,
       TDate,

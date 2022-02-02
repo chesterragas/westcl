@@ -338,7 +338,11 @@
             today-btn
             title="Weekly Rent Schedule"
             subtitle="West Central Lodge"
+             minimal
+             landscape
           />
+
+        
 
           <div class="row q-ml-md">
             <div class="col-2 col-md-2">
@@ -911,19 +915,12 @@ export default {
 </script>
 
 <style>
-.q-date {
-  width: 1000px !important;
-  height: 700px !important;
+
+.q-date--landscape-minimal{
+  width:1000px;
+  height:715px;
 }
-.block {
-  font-size: 20px;
-  font-weight: bold;
-}
-.q-date__calendar-weekdays > div {
-  opacity: 0.38;
-  font-size: 20px;
-  font-weight: bold;
-}
+
 .bg-yellow {
   background: #4882ff !important;
   height: 30px;
@@ -943,11 +940,5 @@ export default {
 }
 .notranslate .material-icons .q-icon {
   display: none;
-}
-
-html {
-  overflow: scroll;
-  overflow-x: hidden;
-  /* overflow-y: hidden; */
 }
 </style>

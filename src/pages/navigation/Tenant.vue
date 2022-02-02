@@ -1,6 +1,7 @@
 <template>
   <div v-if="!loading"></div>
   <div v-if="!isCoupleComputed"></div>
+
   <div class="row q-mt-md">
     <div class="col-12 col-md-12 q-mx-md">
       <q-btn size="md" class="glossy" color="teal" icon="arrow_back" to="/"
@@ -654,10 +655,12 @@
                     <q-popup-proxy v-if="closethis">
                       <q-date minimal v-model="bill.dueDate" type="date" @click="closeEndDate(bill.dueDate)">
                       </q-date>
+
+
+                      
                     </q-popup-proxy>
                   </q-icon>
                 </template>
-                
               </q-input>
             </div>
             <div class="col-12 col-md-5">

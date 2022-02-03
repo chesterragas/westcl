@@ -57,6 +57,7 @@
               label="First Name"
               v-model="tenant.firstName"
               :readonly="!isEdit"
+              required
             ></q-input>
           </div>
         </div>
@@ -68,6 +69,7 @@
               label="Last Name"
               v-model="tenant.lastName"
               :readonly="!isEdit"
+              required
             ></q-input>
           </div>
         </div>
@@ -79,6 +81,7 @@
               label="Phone"
               v-model="tenant.mobileNo"
               :readonly="!isEdit"
+              required
             ></q-input>
           </div>
         </div>
@@ -89,6 +92,7 @@
               label="Email"
               v-model="tenant.email"
               :readonly="!isEdit"
+              required
             ></q-input>
           </div>
         </div>
@@ -100,6 +104,7 @@
               label="Address"
               v-model="tenant.address"
               :readonly="!isEdit"
+              required
             ></q-input>
           </div>
         </div>
@@ -110,6 +115,7 @@
               label="Passport No"
               v-model="tenant.passportNo"
               :readonly="!isEdit"
+              required
             ></q-input>
           </div>
         </div>
@@ -121,6 +127,7 @@
               label="Alternative Contact"
               v-model="tenant.alternativeContact"
               :readonly="!isEdit"
+              required
             ></q-input>
           </div>
         </div>
@@ -133,6 +140,7 @@
                 label="Starting Date"
                 filled
                 :readonly="!isEdit"
+                required
                 minimal
               >
                <template v-slot:append>
@@ -168,6 +176,7 @@
                 label="Spouse First Name"
                 v-model="tenant.spouse.firstName"
                 :readonly="!isEdit"
+                required
               ></q-input>
             </div>
           </div>
@@ -178,6 +187,7 @@
                 label="Spouse Last Name"
                 v-model="tenant.spouse.lastName"
                 :readonly="!isEdit"
+                required
               ></q-input>
             </div>
           </div>
@@ -188,6 +198,7 @@
                 label="Spouse Phone"
                 v-model="tenant.spouse.mobileNo"
                 :readonly="!isEdit"
+                required
               ></q-input>
             </div>
           </div>
@@ -198,6 +209,7 @@
                 label="Spouse Email"
                 v-model="tenant.spouse.email"
                 :readonly="!isEdit"
+                required
               ></q-input>
             </div>
           </div>
@@ -208,6 +220,7 @@
                 label="Spouse Alternative Contact"
                 v-model="tenant.spouse.alternativeContact"
                 :readonly="!isEdit"
+                required
               ></q-input>
             </div>
           </div>
@@ -218,6 +231,7 @@
                 label="Spouse Passport No"
                 v-model="tenant.spouse.passportNo"
                 :readonly="!isEdit"
+                required
               ></q-input>
             </div>
           </div>

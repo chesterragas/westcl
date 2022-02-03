@@ -643,8 +643,6 @@
         <form @submit="AddBill">
           <div class="row justify-around">
             <div class="col-12 col-md-5">
-
-          
             <q-input
                 v-model="DDate"
                 label="Due Date"
@@ -656,9 +654,6 @@
                     <q-popup-proxy v-if="closethis">
                       <q-date minimal v-model="bill.dueDate" type="date" @click="closeEndDate(bill.dueDate)">
                       </q-date>
-
-
-                      
                     </q-popup-proxy>
                   </q-icon>
                 </template>
@@ -1249,7 +1244,6 @@ export default {
       isUpdate.value = true;
       selectedrow.value = row;
       bill.value = row;
-      console.log(bill.value);
       DDate.value = bill.value.dueDate;
       ShowBillModal();
     }
@@ -1281,6 +1275,8 @@ export default {
     }
     function closeBill() {
       addBill.value = false;
+      bill.value = new Bill();
+      DDate.value = "";
     }
     function closeRent(){
       updateRent.value = false;
@@ -1374,7 +1370,7 @@ export default {
     }
 
     function closeEndDate(item : any){
-      
+      console.log(item);
       if(item != ""){
        DDate.value = date.formatDate(item, 'DD/MM/YYYY');
        closethis.value = false;

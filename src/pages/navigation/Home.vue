@@ -176,6 +176,28 @@
               />
             </div>
           </div>
+          <div class="row justify-around q-mt-md" v-if="!isUpdate">
+            <div class="col-12 col-md-5">
+              <q-input
+                v-model="RDDate"
+                label="Date"
+                filled
+                
+              >
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
+                    <q-popup-proxy v-if="closethis">
+                      <q-date minimal v-model="rentamount.rentDate" type="date" @click="RcloseEndDate(rentamount.rentDate)">
+                      </q-date>
+                    </q-popup-proxy>
+                  </q-icon>
+                </template>
+              </q-input>
+            </div>
+            <div class="col-12 col-md-5">
+              
+            </div>
+          </div>
           <div class="row justify-around q-mt-lg">
             <div class="q-pa-md q-gutter-sm justify-center">
               <q-btn
@@ -212,7 +234,7 @@ import { Property, RentAmount } from "../../model";
 import { db, snapshotToArray, auth } from "boot/firebase";
 import { useStore } from "vuex";
 import { api } from 'boot/axios'
-import { useQuasar } from "quasar";
+import { openURL, useQuasar, date } from "quasar";
 
 export default {
   name: "HomePage",
@@ -224,6 +246,7 @@ export default {
     const loading = ref(false);
     let property: Ref<Property> = ref(new Property());
     const rentamount: Ref<RentAmount> = ref(new RentAmount());
+    const RDDate = ref("");
     const hcount = computed(() => {
       db.ref("M_Property/").on("value", (resp) => {
         house.value = snapshotToArray(resp);
@@ -243,6 +266,7 @@ export default {
     const isUpdate = ref(false);
     const keydata = ref("");
     const filter = ref("");
+    const closethis = ref(true);
     function showmodal() {
       // add.value = true;
       // isUpdate.value = false;
@@ -264,6 +288,7 @@ export default {
       if(pushProperty.key != null){
         rentamount.value.propertyNo = property.value.propertyNo;
         rentamount.value.propertyKey = pushProperty.key;
+        rentamount.value.rentDate = date.formatDate(rentamount.value.rentDate, 'DD/MM/YYYY');
       }
       var pushPropertyRent = db.ref("M_PropertyRent/").push(rentamount.value);
      
@@ -336,7 +361,22 @@ export default {
       modalshow.value = false;
     }
 
+    function RcloseEndDate(item : any){
+      
+      if(item != ""){
+       RDDate.value = date.formatDate(item, 'DD/MM/YYYY');
+       closethis.value = false;
+      }
+    }
+    function openEndDate(){
+       closethis.value = true;
+    }
+
     return {
+      closethis,
+      openEndDate,
+      RDDate,
+      RcloseEndDate,
       hcount,
       property,
       rentamount,

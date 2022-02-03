@@ -56,6 +56,7 @@ export class TenantDetails{
   weekDayDue = "";
   bankAccount = "";
   startDate = "";
+  isDeleted = false;
   createDate = new Date().toLocaleDateString();
   createUser = auth.currentUser?.email;
   updateDate = new Date().toLocaleDateString();

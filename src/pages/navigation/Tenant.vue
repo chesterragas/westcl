@@ -649,6 +649,7 @@
                 v-model="DDate"
                 label="Due Date"
                 filled
+                required
               >
                <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
@@ -779,7 +780,7 @@
                 v-model="RDDate"
                 label="Date"
                 filled
-                
+                required
               >
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
@@ -886,7 +887,7 @@ const columnsOverall = [
     field: (row: { rentDate: any }) => row.rentDate,
     align: "left",
     sortable: true,
-    format: (val: any) => `${val}`,
+    format: (val: any) => date.formatDate(val, 'DD-MM-YYYY')
   },
   {
     name: "agentName",
@@ -990,7 +991,6 @@ export default {
                 paymentdays = paymentdays.filter(
                   (x) => new Date(x) >= new Date(element.startDate)
                 );
-                console.log(paymentdays);
                 let compare = arr_diff(paymentdays, paydate);
 
                 let currentdue = 0;
@@ -1004,7 +1004,7 @@ export default {
               }
             });
         });
-      });
+    });
     db.ref("M_Payments/")
       .orderByChild("tenantid")
       .on("value", (resp) => {
@@ -1024,44 +1024,20 @@ export default {
             renttotal.value += parseInt(data[x].amount);
           }
         }
-      });
+    });
     db.ref("M_Bill/")
       .orderByChild("propertyNo")
       .equalTo(property.value.propertyNo)
       .on("value", (resp) => {
         Bills.value = snapshotToArray(resp);
     });
-
     db.ref("M_PropertyRent/")
-       .orderByChild("propertyNo")
-      .equalTo(property.value.propertyNo)
+       .orderByChild("propertyKey")
+      .equalTo(property.value.key)
       .on("value", (resp) => { 
         RentAmounts.value = snapshotToArray(resp);
        RentAmountBank.value = RentAmounts.value[RentAmounts.value.length - 1];
     });
-
-    function arr_diff(a1: any[], a2: any[]) {
-      var a = [],
-        diff = [];
-
-      for (var i = 0; i < a1.length; i++) {
-        a[a1[i]] = true;
-      }
-
-      for (var i = 0; i < a2.length; i++) {
-        if (a[a2[i]]) {
-          delete a[a2[i]];
-        } else {
-          a[a2[i]] = true;
-        }
-      }
-
-      for (var k in a) {
-        diff.push(k);
-      }
-
-      return diff;
-    }
 
     const historylist = computed(() => {
       return rentlist.value;
@@ -1129,6 +1105,29 @@ export default {
     const TDate = computed(() => {
       return date.formatDate(tenantDetails.value.startDate, 'DD/MM/YYYY')
     });
+
+     function arr_diff(a1: any[], a2: any[]) {
+      var a = [],
+        diff = [];
+
+      for (var i = 0; i < a1.length; i++) {
+        a[a1[i]] = true;
+      }
+
+      for (var i = 0; i < a2.length; i++) {
+        if (a[a2[i]]) {
+          delete a[a2[i]];
+        } else {
+          a[a2[i]] = true;
+        }
+      }
+
+      for (var k in a) {
+        diff.push(k);
+      }
+
+      return diff;
+    }
 
     function tenantModal() {
       addTenant.value = true;

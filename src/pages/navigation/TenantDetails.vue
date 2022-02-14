@@ -134,24 +134,21 @@
          <div class="row">
           <div class="col-12 col-md-10 q-mt-xs q-mx-md">
          
-
-            <q-input
-                v-model="DDate2"
-                label="Starting Date"
-                filled
-                :readonly="!isEdit"
-                required
-                minimal
-              >
-               <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer" @click="openEndDate()" :readonly="!isEdit">
-                    <q-popup-proxy v-if="closethis">
-                      <q-date style="width:300px;height:400px;"  minimal v-model="tenant.startDate" type="date" @click="closeEndDate(tenant.startDate)">
+          <q-input label="Starting Date" required filled v-model="tenant.startDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy v-if="isEdit" ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date minimal v-model="tenant.startDate"  mask="DD/MM/YYYY">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
                 </template>
               </q-input>
+
+          
 
           </div>
         </div>
@@ -849,26 +846,12 @@ export default {
       }
     }
 
-    const DDate = computed(() => {
-      return date.formatDate(tenant.value.startDate, 'DD/MM/YYYY')
-    });
 
-    const closethis = ref(true);
-    function closeEndDate(item : any){
-      if(item != ""){
-       closethis.value = false;
-      }
-    }
-    function openEndDate(){
-      if(isEdit.value){
-       closethis.value = true;
-      }
-    }
+
+
+  
+  
     return {
-      DDate,
-      closethis,
-      closeEndDate,
-      openEndDate,
       showmodal2,
       couple,
       UpdateTenant,

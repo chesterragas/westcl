@@ -178,21 +178,23 @@
           </div>
           <div class="row justify-around q-mt-md" v-if="!isUpdate">
             <div class="col-12 col-md-5">
-              <q-input
-                v-model="RDDate"
-                label="Date"
-                filled
-                
-              >
+
+
+ <q-input label="Date" required filled v-model="rentamount.rentDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
                 <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
-                    <q-popup-proxy v-if="closethis">
-                      <q-date minimal v-model="rentamount.rentDate" type="date" @click="RcloseEndDate(rentamount.rentDate)">
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date minimal v-model="rentamount.rentDate"  mask="DD/MM/YYYY">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
                 </template>
               </q-input>
+
+      
             </div>
             <div class="col-12 col-md-5">
               
@@ -243,13 +245,17 @@ export default {
     const $q = useQuasar();
     const store = useStore();
     let house: Ref<any[]> = ref([]);
+    let houseRent: Ref<any[]> = ref([]);
     const loading = ref(false);
     let property: Ref<Property> = ref(new Property());
-    const rentamount: Ref<RentAmount> = ref(new RentAmount());
-    const RDDate = ref("");
+    let rentamount: Ref<RentAmount> = ref(new RentAmount());
     const hcount = computed(() => {
       db.ref("M_Property/").on("value", (resp) => {
         house.value = snapshotToArray(resp);
+        loading.value = false;
+      });
+      db.ref("M_PropertyRent/").on("value", (resp) => {
+        houseRent.value = snapshotToArray(resp);
         loading.value = false;
       });
       if (filter.value == "") {
@@ -266,10 +272,7 @@ export default {
     const isUpdate = ref(false);
     const keydata = ref("");
     const filter = ref("");
-    const closethis = ref(true);
     function showmodal() {
-      // add.value = true;
-      // isUpdate.value = false;
       modalshow.value = true;
       loading.value = true;
     }
@@ -278,7 +281,6 @@ export default {
     function AddModal(){
       add.value = true;
       isUpdate.value = false;
-      // property = ref(new Property());
       showmodal();
     }
 
@@ -288,7 +290,6 @@ export default {
       if(pushProperty.key != null){
         rentamount.value.propertyNo = property.value.propertyNo;
         rentamount.value.propertyKey = pushProperty.key;
-        rentamount.value.rentDate = date.formatDate(rentamount.value.rentDate, 'DD/MM/YYYY');
       }
       var pushPropertyRent = db.ref("M_PropertyRent/").push(rentamount.value);
      
@@ -308,6 +309,7 @@ export default {
       isUpdate.value = true;
       keydata.value = key;
       property.value = house.value.filter((x) => x.key == key)[0];
+      rentamount.value = houseRent.value.filter((x) => x.propertyKey == key)[0];
       showmodal();
     }
 
@@ -361,22 +363,10 @@ export default {
       modalshow.value = false;
     }
 
-    function RcloseEndDate(item : any){
-      
-      if(item != ""){
-       RDDate.value = date.formatDate(item, 'DD/MM/YYYY');
-       closethis.value = false;
-      }
-    }
-    function openEndDate(){
-       closethis.value = true;
-    }
+  
+ 
 
     return {
-      closethis,
-      openEndDate,
-      RDDate,
-      RcloseEndDate,
       hcount,
       property,
       rentamount,

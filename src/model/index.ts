@@ -40,6 +40,7 @@ export class rowdata {
 
 export class TenantDetails{
   propertyNo = "";
+  propertyKey = "";
   firstName = "";
   lastName = "";
   mobileNo = "";

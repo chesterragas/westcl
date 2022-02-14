@@ -412,17 +412,7 @@
                     <q-td key="bankAccount" :props="props">{{
                       props.row.bankAccount
                     }}</q-td>
-                    <q-td key="actions" :props="props">
-                      <q-btn
-                        class="glossy"
-                        color="blue"
-                        icon="edit"
-                        size="sm"
-                        no-caps
-                        @click="editRent(props.row)"
-                      ></q-btn>
-                      
-                    </q-td>
+                 
                   </q-tr>
                 </template>
               </q-table>
@@ -520,21 +510,23 @@
 
           <div class="row justify-around q-mt-md">
             <div class="col-12 col-md-5">
-               <q-input
-                v-model="TDate"
-                label="Starting Date"
-                filled
-                
-              >
+
+
+ <q-input label="Starting Date" required filled v-model="tenantDetails.startDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
                 <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
-                    <q-popup-proxy v-if="closethis">
-                      <q-date minimal v-model="tenantDetails.startDate" type="date" @click="closeEndDate(tenantDetails.startDate)">
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date minimal v-model="tenantDetails.startDate"  mask="DD/MM/YYYY">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
                 </template>
               </q-input>
+
+         
             </div>
 
             <div class="col-12 col-md-5">
@@ -645,16 +637,12 @@
 
           <div class="row justify-around">
             <div class="col-12 col-md-5">
-            <q-input
-                v-model="DDate"
-                label="Due Date"
-                filled
-                required
-              >
-               <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
-                    <q-popup-proxy ref="qDateProxy">
-                      <q-date minimal v-model="bill.dueDate" type="date" @click="closeEndDate($refs.qDateProxy)">
+
+          <q-input label="Due Date" required filled v-model="bill.dueDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
+                <template v-slot:append>
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date minimal v-model="bill.dueDate"  mask="DD/MM/YYYY">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat />
                       </div>
@@ -663,6 +651,7 @@
                   </q-icon>
                 </template>
               </q-input>
+
             </div>
             <div class="col-12 col-md-5">
               <q-input
@@ -776,16 +765,16 @@
           <div class="row justify-around">
             <div class="col-12 col-md-5">
 
-            <q-input
-                v-model="RDDate"
-                label="Date"
-                filled
-                required
-              >
+            
+
+              <q-input label="Date" required filled v-model="newRentAmountBank.rentDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
                 <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer" @click="openEndDate()">
-                    <q-popup-proxy v-if="closethis">
-                      <q-date minimal v-model="newRentAmountBank.rentDate" type="date" @click="RcloseEndDate(newRentAmountBank.rentDate)">
+                  <q-icon name="event" class="cursor-pointer">
+                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                      <q-date minimal v-model="newRentAmountBank.rentDate"  mask="DD/MM/YYYY">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Close" color="primary" flat />
+                      </div>
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
@@ -907,11 +896,11 @@ const columnsOverall = [
     field: "bankAccount",
     align: "left",
   },
-  {
-    name: "actions",
-    label: "Actions",
-    field: "actions",
-  },
+  // {
+  //   name: "actions",
+  //   label: "Actions",
+  //   field: "actions",
+  // },
 ];
 
 export default {
@@ -956,19 +945,16 @@ export default {
     const newRentAmountBank : Ref<RentAmount> = ref(new RentAmount());
     const propertyRentAmount = ref(0);
     const dueTotal = ref(0);
-    const DDate = ref("");
-    const RDDate = ref("");
-    const closethis = ref(true);
 
     db.ref("M_TenantDetails/")
-      .orderByChild("propertyNo")
-      .equalTo(property.value.propertyNo)
+      .orderByChild("propertyKey")
+      .equalTo(property.value.key)
       .on("value", (resp) => {
         tenants.value = snapshotToArray(resp);
-        tenants.value = tenants.value.filter(x=>x.isActive == 'true');
+        tenants.value = tenants.value.filter(x=>x.isActive == 'true' && x.isDeleted != "true");
         propertyRentAmount.value = 0;
         dueTotal.value = 0;
-        tenants.value.filter(x=>x.isDeleted == "false").forEach((element) => {
+        tenants.value.filter(x=>x.isDeleted == false && x.isActive == "true").forEach((element) => {
           let thededuct = 0;
           propertyRentAmount.value += parseInt(element.weeklyAmountDue);
           db.ref("M_Payments/")
@@ -978,7 +964,7 @@ export default {
               if (element.weekDayDue != "") {
                 let data = snapshotToArray(returndata);
                 let paydate: any[] = [];
-                data.filter(x=>x.isDeleted == "false").forEach((paidDay) => {
+                data.filter(x=>x.isDeleted == false).forEach((paidDay) => {
                   paydate.push(paidDay.paymentdate);
                   if(paidDay.amount != element.weeklyAmountDue){
                     thededuct+=(element.weeklyAmountDue - paidDay.amount);
@@ -987,22 +973,26 @@ export default {
 
                 let num = getnum(element.weekDayDue);
                 let paymentdays = getalldays(num);
+                var dateString = element.startDate; 
+                var dateParts = dateString.split("/");
+                var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+                
                 paymentdays = paymentdays.filter(
-                  (x) => new Date(x) >= new Date(element.startDate)
+                  (x) => new Date(x) >= new Date(dateObject)
                 );
+                
                 let compare = arr_diff(paymentdays, paydate);
-
+             
                 let currentdue = 0;
-                console.log(compare);
                 compare.forEach((datadue) => {
                   currentdue += parseInt(element.weeklyAmountDue);
                 });
-                element.currentDue = 0;//currentdue - thededuct;
+                // console.log(compare);
+                // console.log(currentdue);
+                element.currentDue = 0;
                 element.currentDue = currentdue - thededuct;
                 dueTotal.value += currentdue- thededuct;
                 db.ref("M_TenantDetails/").child(element.key).update(element);
-                console.log(currentdue);
-                console.log(thededuct);
               }
             });
         });
@@ -1049,7 +1039,7 @@ export default {
       if (property.value.propertyNo == "") {
         window.location.href = "/";
       }
-      return tenants.value.filter(x=>x.isDeleted == "false");
+      return tenants.value.filter(x=>x.isDeleted == false && x.isActive == "true");
     });
 
     const powerBillList = computed(() => {
@@ -1104,11 +1094,39 @@ export default {
       return RentAmounts.value.reverse();
     });
 
-    const TDate = computed(() => {
-      return date.formatDate(tenantDetails.value.startDate, 'DD/MM/YYYY')
-    });
+    function getalldays(num: number) {
+      let days = [];
+      var d = new Date(new Date().getFullYear(), 0, 1),
+      year = d.getFullYear();
+      d.setDate(1);
+      while (d.getDay() !== num) {
+        d.setDate(d.getDate() + 1);
+      }
 
-     function arr_diff(a1: any[], a2: any[]) {
+      while (d.getFullYear() === year) {
+        var pushDate = new Date(d.getTime());
+
+        var month =
+          pushDate.getMonth() + 1 < 10
+            ? "0" + (pushDate.getMonth() + 1)
+            : pushDate.getMonth() + 1;
+        var day =
+          pushDate.getDate() + 1 <= 10
+            ? "0" + pushDate.getDate()
+            : pushDate.getDate();
+        if (
+          new Date(pushDate.getFullYear() + "/" + month + "/" + day) <=
+          new Date()
+        ) {
+           days.push(month+ "/" + day + "/" + pushDate.getFullYear() );
+        }
+        d.setDate(d.getDate() + 7);
+      }
+      console.log(days);
+      return days;
+    }
+
+    function arr_diff(a1: any[], a2: any[]) {
       var a = [],
         diff = [];
 
@@ -1138,7 +1156,6 @@ export default {
     function ShowBillModal() {
       addBill.value = true;
       loading.value = false;
-      closethis.value = true;
    
     }
     function billModal(type: string, providerName: string) {
@@ -1156,6 +1173,7 @@ export default {
       loading.value = false;
     }
     function AddTenant() {
+      tenantDetails.value.propertyKey = property.value.key;
       tenantDetails.value.propertyNo = property.value.propertyNo;
       tenantDetails.value.spouse = spouseDetails.value;
       tenantDetails.value.currentDue = tenantDetails.value.weeklyAmountDue;
@@ -1175,8 +1193,8 @@ export default {
       });
     }
     function AddBill() {
+      debugger;
       if (isUpdate.value == false) {
-        bill.value.dueDate = date.formatDate(bill.value.dueDate, 'DD/MM/YYYY');
         db.ref("M_Bill").push(bill.value);
         try {
           const storerage = storage
@@ -1197,7 +1215,6 @@ export default {
         });
       } 
       else {
-        bill.value.dueDate = DDate.value;
         db.ref("M_Bill/").child(selectedrow.value.key).update(bill.value);
         try {
           const storerage = storage
@@ -1252,9 +1269,7 @@ export default {
       isUpdate.value = true;
       selectedrow.value = row;
       bill.value = row;
-      console.log(row);
-      DDate.value = row.dueDate;
-      bill.value.dueDate = "";
+      // bill.value.dueDate = "";
       ShowBillModal();
       recallBill();
     }
@@ -1287,42 +1302,12 @@ export default {
     function closeBill() {
       addBill.value = false;
       bill.value = new Bill();
-      DDate.value = "";
     }
     function closeRent(){
       updateRent.value = false;
     }
 
-    function getalldays(num: number) {
-      let days = [];
-      var d = new Date(new Date().getFullYear(), 0, 1),
-      year = d.getFullYear();
-      d.setDate(1);
-      while (d.getDay() !== num) {
-        d.setDate(d.getDate() + 1);
-      }
-
-      while (d.getFullYear() === year) {
-        var pushDate = new Date(d.getTime());
-
-        var month =
-          pushDate.getMonth() + 1 < 10
-            ? "0" + (pushDate.getMonth() + 1)
-            : pushDate.getMonth() + 1;
-        var day =
-          pushDate.getDate() + 1 <= 10
-            ? "0" + pushDate.getDate()
-            : pushDate.getDate();
-        if (
-          new Date(pushDate.getFullYear() + "/" + month + "/" + day) <
-          new Date()
-        ) {
-           days.push(pushDate.getFullYear() + "/" + month + "/" + day);
-        }
-        d.setDate(d.getDate() + 7);
-      }
-      return days;
-    }
+    
 
     function getnum(dueday: string) {
       var num = 0;
@@ -1380,29 +1365,10 @@ export default {
       return weekday;
     }
 
-    function closeEndDate(item : any){
-    
-      // if(item != ""){
-        DDate.value = date.formatDate(bill.value.dueDate, 'DD/MM/YYYY');
-      //  //closethis.value = false;
-      // }
-    }
-
-    function RcloseEndDate(item : any){
-      
-      if(item != ""){
-       RDDate.value = date.formatDate(item, 'DD/MM/YYYY');
-       closethis.value = false;
-      }
-    }
-    function openEndDate(){
-       closethis.value = true;
-    }
 
     function InsertRentAmount(){
       newRentAmountBank.value.propertyNo = property.value.propertyNo;
       newRentAmountBank.value.propertyKey = property.value.key;
-      newRentAmountBank.value.rentDate = date.formatDate(newRentAmountBank.value.rentDate, 'DD/MM/YYYY');
       db.ref("M_PropertyRent").push(newRentAmountBank.value);
       loading.value = false;
       newRentAmountBank.value = new RentAmount();
@@ -1418,13 +1384,11 @@ export default {
     function ShowRentModal() {
       updateRent.value = true;
       loading.value = false;
-      closethis.value = true;
     }
 
     function editRent(row:any){
       isUpdateRent.value = true;
       newRentAmountBank.value = row;
-      RDDate.value = newRentAmountBank.value.rentDate;
       ShowRentModal();
     }
 
@@ -1435,18 +1399,15 @@ export default {
       .on("value", (resp) => {
         Bills.value = snapshotToArray(resp);
     });
+
+    // function checkDate (val : any) {
+    //   return date.isValid(date.extractDate(val, 'locale')) || 'Invalid date.'
+    // }
     }
     return {
       isUpdateRent,
       editRent,
       InsertRentAmount,
-      closethis,
-      openEndDate,
-      closeEndDate,
-      RcloseEndDate,
-      DDate,
-      RDDate,
-      TDate,
       closeBill,
       historylist,
       gotoTenantDetails,

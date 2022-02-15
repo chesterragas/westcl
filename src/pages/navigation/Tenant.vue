@@ -964,7 +964,7 @@ export default {
               if (element.weekDayDue != "") {
                 let data = snapshotToArray(returndata);
                 let paydate: any[] = [];
-                data.filter(x=>x.isDeleted == false).forEach((paidDay) => {
+                data.filter(x=>x.isDeleted == "false").forEach((paidDay) => {
                   paydate.push(paidDay.paymentdate);
                   if(paidDay.amount != element.weeklyAmountDue){
                     thededuct+=(element.weeklyAmountDue - paidDay.amount);
@@ -980,7 +980,6 @@ export default {
                 paymentdays = paymentdays.filter(
                   (x) => new Date(x) >= new Date(dateObject)
                 );
-                
                 let compare = arr_diff(paymentdays, paydate);
              
                 let currentdue = 0;
@@ -1102,10 +1101,8 @@ export default {
       while (d.getDay() !== num) {
         d.setDate(d.getDate() + 1);
       }
-
       while (d.getFullYear() === year) {
         var pushDate = new Date(d.getTime());
-
         var month =
           pushDate.getMonth() + 1 < 10
             ? "0" + (pushDate.getMonth() + 1)
@@ -1122,10 +1119,8 @@ export default {
         }
         d.setDate(d.getDate() + 7);
       }
-      console.log(days);
       return days;
     }
-
     function arr_diff(a1: any[], a2: any[]) {
       var a = [],
         diff = [];
@@ -1148,7 +1143,6 @@ export default {
 
       return diff;
     }
-
     function tenantModal() {
       addTenant.value = true;
       loading.value = true;

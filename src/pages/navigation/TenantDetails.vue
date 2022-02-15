@@ -134,7 +134,7 @@
          <div class="row">
           <div class="col-12 col-md-10 q-mt-xs q-mx-md">
          
-          <q-input label="Starting Date" required filled v-model="tenant.startDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
+          <q-input label="Starting Date" :readonly="!isEdit" required filled v-model="tenant.startDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy v-if="isEdit" ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -345,12 +345,12 @@
           <q-date
             v-model="datevar"
             :events="payday.value"
-            :event-color="(date) => (pay.includes(datevar) ? 'orange' : 'yellow')"
+            :event-color="(date) => (pay.includes(date) ? 'orange' : 'yellow')"
             today-btn
             title="Weekly Rent Schedule"
             subtitle="West Central Lodge"
-             minimal
-             landscape
+            minimal
+            landscape
           />
 
         
@@ -504,7 +504,7 @@ const columns = [
     field: (row: { paymentdate: any }) => row.paymentdate,
     align: "left",
     sortable: true,
-    format: (val: any) => `${val}`,
+    format: (val: any) => date.formatDate(val, 'DD/MM/YYYY')
   },
   {
     name: "amount",
@@ -595,9 +595,12 @@ export default {
       paymenthistory.value
         .filter((x) => x.isDeleted != "true")
         .forEach((element) => {
-          pay.value.push(element.paymentdate);
+          console.log(element);
+          var d = element.paymentdate; 
+          var dateParts = d.split("/");
+          var dateObject = dateParts[2] +"/"+dateParts[1]+"/"+dateParts[0];
+          pay.value.push(dateObject);
         });
-
       return paymenthistory.value.filter((x) => x.isDeleted != "true");
     });
 
@@ -626,7 +629,7 @@ export default {
       pay.value.push(datevar.value);
       persistent.value = false;
       payment.value.bankaccount = tenant.value.bankAccount;
-      payment.value.paymentdate = datevar.value;
+      payment.value.paymentdate = date.formatDate(datevar.value, 'DD/MM/YYYY');
       payment.value.tenantid = tenant.value.key;
       if (!isUpdate.value) {
         db.ref("M_Payments/").push(payment.value);
@@ -715,8 +718,8 @@ export default {
       pay.value.forEach((element) => {
         events.value.push(element);
       });
-      var d = new Date(),
-        year = d.getFullYear();
+      var d = new Date(new Date().getFullYear(), 0, 1),
+      year = d.getFullYear();
 
       d.setDate(1);
 
@@ -725,9 +728,13 @@ export default {
         d.setDate(d.getDate() + 1);
       }
 
+      var dateString = tenant.value.startDate; 
+      var dateParts = dateString.split("/");
+      var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+      
+
       while (d.getFullYear() === year) {
         var pushDate = new Date(d.getTime());
-
         var month =
           pushDate.getMonth() + 1 < 10
             ? "0" + (pushDate.getMonth() + 1)
@@ -736,11 +743,13 @@ export default {
           pushDate.getDate() + 1 <= 10
             ? "0" + pushDate.getDate()
             : pushDate.getDate();
-
+        if(new Date(pushDate.getFullYear() + "/" + month + "/" + day) >= dateObject){
         events.value.push(pushDate.getFullYear() + "/" + month + "/" + day);
+        }
         d.setDate(d.getDate() + 7);
       }
     }
+
 
     function fileselected(event: any) {
       selectedfile.value = event;
@@ -772,7 +781,6 @@ export default {
       store.commit("setTenant", tenant.value);
       store.commit("setTenantCouple", couple.value);
       let update = store.getters.getTenant;
-      console.log(update);
       db.ref("M_TenantDetails/").child(update.key).update(update);
       isEdit.value = false;
       $q.notify({
@@ -817,12 +825,14 @@ export default {
         );
         if (checker.length > 0) {
           payment.value = checker[0];
+          payment.value.paymentdate = date.formatDate(datevar.value,'DD/MM/YYYY');
           datevar.value = payment.value.paymentdate;
           isUpdate.value = true;
         } else {
           isUpdate.value = false;
           payment.value = new Payment();
-          payment.value.paymentdate = datevar.value;
+          //payment.value.paymentdate = datevar.value;
+          payment.value.paymentdate = date.formatDate(datevar.value,'DD/MM/YYYY');
         }
       } else {
         datevar.value = "";
@@ -830,7 +840,6 @@ export default {
     }
 
     function showmodal2(evt: any, row: any) {
-      // console.log(row);
       loading.value = false;
       persistent.value = true;
       checker = paymenthistory.value.filter(
@@ -839,18 +848,12 @@ export default {
       if (checker.length > 0) {
         payment.value = checker[0];
         isUpdate.value = true;
-        console.log(payment.value);
       } else {
         isUpdate.value = false;
         payment.value = new Payment();
       }
     }
 
-
-
-
-  
-  
     return {
       showmodal2,
       couple,
@@ -918,16 +921,19 @@ export default {
   height:715px;
 }
 
+.q-date__today{
+  background: #50c7ff !important;
+}
 
 .bg-yellow {
-  background: #4882ff !important;
+  
   height: 30px;
   width: 30px;
   opacity: 0.4;
   border-radius: 50%;
 }
 .bg-orange {
-  background: #ffc64d !important;
+  background: #33ff00  !important;
   height: 30px;
   width: 30px;
   opacity: 0.4;

@@ -980,18 +980,30 @@ export default {
                 paymentdays = paymentdays.filter(
                   (x) => new Date(x) >= new Date(dateObject)
                 );
-                let compare = arr_diff(paymentdays, paydate);
-             
-                let currentdue = 0;
-                compare.forEach((datadue) => {
-                  currentdue += parseInt(element.weeklyAmountDue);
+               
+                console.log(paymentdays);
+                console.log(data.filter(x=>x.isDeleted == "false"));
+                let paidAmount = 0;
+                let paidDueAmount = 0;
+                data.filter(x=>x.isDeleted == "false").forEach((paidDay) => {
+                  paidAmount += parseInt(paidDay.amount);
                 });
-                // console.log(compare);
-                // console.log(currentdue);
-                element.currentDue = 0;
-                element.currentDue = currentdue - thededuct;
-                dueTotal.value += currentdue- thededuct;
+                paymentdays.forEach((paidDay) => {
+                  paidDueAmount += parseInt(element.weeklyAmountDue);
+                });
+                console.log(paidAmount);
+                console.log(paidDueAmount);
+             
+            
+                element.currentDue = paidDueAmount - paidAmount;
+                dueTotal.value += element.currentDue;
                 db.ref("M_TenantDetails/").child(element.key).update(element);
+
+
+
+//NEW
+              
+
               }
             });
         });
@@ -1121,28 +1133,7 @@ export default {
       }
       return days;
     }
-    function arr_diff(a1: any[], a2: any[]) {
-      var a = [],
-        diff = [];
-
-      for (var i = 0; i < a1.length; i++) {
-        a[a1[i]] = true;
-      }
-
-      for (var i = 0; i < a2.length; i++) {
-        if (a[a2[i]]) {
-          delete a[a2[i]];
-        } else {
-          a[a2[i]] = true;
-        }
-      }
-
-      for (var k in a) {
-        diff.push(k);
-      }
-
-      return diff;
-    }
+  
     function tenantModal() {
       addTenant.value = true;
       loading.value = true;

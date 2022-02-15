@@ -75,7 +75,7 @@ export class TenantDueDateDay{
 
 export class Payment{
   tenantid = "";
-  paymentdate = new Date().toISOString().split("T")[0];
+  paymentdate = "";
   amount = "0";
   method = "";
   bankaccount = "";

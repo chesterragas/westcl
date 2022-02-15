@@ -504,7 +504,7 @@ const columns = [
     field: (row: { paymentdate: any }) => row.paymentdate,
     align: "left",
     sortable: true,
-    format: (val: any) => date.formatDate(val, 'DD/MM/YYYY')
+    //format: (val: any) => date.formatDate(val, 'DD/MM/YYYY')
   },
   {
     name: "amount",
@@ -601,6 +601,7 @@ export default {
           var dateObject = dateParts[2] +"/"+dateParts[1]+"/"+dateParts[0];
           pay.value.push(dateObject);
         });
+        console.log(paymenthistory.value.filter((x) => x.isDeleted != "true"));
       return paymenthistory.value.filter((x) => x.isDeleted != "true");
     });
 

@@ -806,9 +806,7 @@
                 type="text"
               ></q-input>
             </div>
-            
           </div>
-       
           <div class="row justify-around q-mt-lg">
             <div class="q-pa-md q-gutter-sm justify-center">
               <q-btn :disabled="!newRentAmountBank.rentDate" color="primary" icon="save" label="Save" type="button" @click="InsertRentAmount" />

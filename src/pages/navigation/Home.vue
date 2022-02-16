@@ -29,6 +29,20 @@
       >
         <q-card class="q-ma-lg">
           <q-card-actions align="right">
+            <input
+              type="file"
+              id="selectedFile"
+              style="display: none"
+              @change="fileselected"
+            />
+            <q-btn
+              class="glossy"
+              color="green"
+              icon="photo"
+              @click="UploadFile(item.key)"
+              onclick="document.getElementById('selectedFile').click();"
+            ></q-btn>
+
             <q-btn
               class="glossy"
               color="blue"
@@ -42,10 +56,12 @@
               icon="delete"
               @click="confirm(item.key)"
             ></q-btn>
+            
           </q-card-actions>
           <div class="col-3" bordered>
-            <q-img
-              src="statics/Capture.PNG"
+            <q-img 
+            class="center" style="height:250px;"
+              :src="item.propertyPicShow"
               basic
               @click="checktenant(item.propertyNo)"
             />
@@ -232,7 +248,7 @@
 <script lang="ts">
 import { computed, Ref, ref } from "vue";
 import { Property, RentAmount } from "../../model";
-import { db, snapshotToArray, auth } from "boot/firebase";
+import { db, snapshotToArray, auth, storage } from "boot/firebase";
 import { useStore } from "vuex";
 import { api } from 'boot/axios'
 import { openURL, useQuasar, date } from "quasar";
@@ -248,8 +264,26 @@ export default {
     const loading = ref(false);
     let property: Ref<Property> = ref(new Property());
     let rentamount: Ref<RentAmount> = ref(new RentAmount());
+    let pix : Ref<any[]> = ref([]);
+
+
+    db.ref("M_Property/").on("value", (resp) => {
+        house.value = snapshotToArray(resp);
+        loading.value = false;
+        hcountFunction();
+    });
+    db.ref("M_PropertyRent/").on("value", (resp) => {
+      houseRent.value = snapshotToArray(resp);
+      loading.value = false;
+    });
+
     const hcount = computed(() => {
-      db.ref("M_Property/").on("value", (resp) => {
+      return house.value;
+    });
+
+
+    function hcountFunction(){
+       db.ref("M_Property/").on("value", (resp) => {
         house.value = snapshotToArray(resp);
         loading.value = false;
       });
@@ -258,13 +292,24 @@ export default {
         loading.value = false;
       });
       if (filter.value == "") {
-        return house.value.filter((x) => x.isDeleted != "true");
-      } else {
-        return house.value
+        house.value= house.value.filter((x) => x.isDeleted != "true");
+      } 
+      else {
+        house.value= house.value
           .filter((x) => x.propertyNo.indexOf(filter.value) > -1)
           .filter((x) => x.isDeleted != "true");
       }
-    });
+      house.value.forEach((ho) => {
+          if(ho.propertyPic != ""){
+              geturl(ho.propertyPic).then(function(response) {
+                  ho.propertyPicShow = response;
+                });
+          }
+          else{
+            ho.propertyPicShow = "statics/Capture.PNG";
+          }
+        });
+    }
 
     const add = ref(false);
     const modalshow = ref(false);
@@ -297,6 +342,7 @@ export default {
       house = ref([]);
       ResetProperty();
       loading.value = false;
+      hcountFunction();
       $q.notify({
         message: "Successfully saved property details",
         icon: "check",
@@ -364,11 +410,56 @@ export default {
       rentamount.value = new RentAmount();
       modalshow.value = false;
     }
+    const selectedfile = ref();
+    const selectedfileName = ref("");
+    let selKey = "";
+    function fileselected(event: any) {
+      selectedfile.value = event;
+      selectedfileName.value = event.target.files[0].name;
 
-  
+      try {
+        const storerage = storage
+          .ref(selectedfile.value.target.files[0].name)
+          .put(selectedfile.value.target.files[0]);
+        let uploadvalue = 0;
+        storerage.on("state_changed", (snapshot) => {
+          uploadvalue = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+
+        
+        property.value = house.value.filter((x) => x.key == selKey)[0];
+        property.value.propertyPic = selectedfileName.value;
+        db.ref("M_Property/").child(selKey).update(property.value);
+        ResetProperty();
+        hcountFunction();
+
+        });
+
+        $q.notify({
+          message: "Uploading image...",
+          icon: "check",
+          color: "green",
+          position: "top",
+        });
+      } catch (err) {}
+    }
+
+    function UploadFile(data:any){
+      selKey = data;
+    }
+
+    function geturl(file: any) {
+      const getfile = storage.ref().child(file);
+      const fileurl = getfile.getDownloadURL();
+      return fileurl;
+      //openURL(await fileurl);
+    }
  
 
     return {
+      pix,
+      UploadFile,
+      selectedfile,
+      fileselected,
       hcount,
       property,
       rentamount,

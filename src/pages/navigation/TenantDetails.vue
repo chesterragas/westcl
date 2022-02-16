@@ -554,7 +554,6 @@ export default {
     const isEdit = ref(false);
     const couple = ref("");
     tenant.value = store.getters.getTenant;
-    // tenant.value.startDate = date.formatDate(tenant.value.startDate, 'DD/MM/YYYY');
     if (tenant.value != null) {
       couple.value = tenant.value.coupleTenancy;
     }
@@ -815,7 +814,11 @@ export default {
     }
 
     function showmodal() {
-      if (datevar.value != "") {
+      var dateString = tenant.value.startDate; 
+      var dateParts = dateString.split("/");
+      var dateObject = new Date(+dateParts[2], dateParts[1] - 1, +dateParts[0]);
+      if(new Date(datevar.value) >= dateObject){
+        if (datevar.value != "") {
         loading.value = false;
         persistent.value = true;
 
@@ -830,12 +833,21 @@ export default {
         } else {
           isUpdate.value = false;
           payment.value = new Payment();
-          //payment.value.paymentdate = datevar.value;
           payment.value.paymentdate = date.formatDate(datevar.value,'DD/MM/YYYY');
         }
       } else {
         datevar.value = "";
       }
+      }
+      else{
+        $q.notify({
+        message: "Selected date is earlier than Start Date",
+        icon: "check",
+        color: "warning",
+        position: "top",
+      });
+      }
+     
     }
 
     function showmodal2(evt: any, row: any) {

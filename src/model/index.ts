@@ -22,6 +22,8 @@ export class Property {
   internetProvider = "";
   waterBill = "";
   tfcUnit = "No";
+  propertyPic = "";
+  propertyPicShow = "";
   isDeleted = "false";
   createDate = new Date().toLocaleDateString();
   createUser = auth.currentUser?.email;

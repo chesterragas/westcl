@@ -21,6 +21,13 @@
       </div>
     </div>
 
+    <div class="row justify-evenly" v-if="hcount.length ==0">
+     <div class="col-7">
+        <q-img src="statics/Capture.PNG">
+        </q-img>
+      </div>
+    </div>
+
     <div class="row justify-evenly" v-if="hcount">
       <div
         class="col-12 col-md-3 q-mx-sm"
@@ -264,25 +271,27 @@ export default {
     const loading = ref(false);
     let property: Ref<Property> = ref(new Property());
     let rentamount: Ref<RentAmount> = ref(new RentAmount());
-    let pix : Ref<any[]> = ref([]);
 
 
-    db.ref("M_Property/").on("value", (resp) => {
-        house.value = snapshotToArray(resp);
-        loading.value = false;
-        hcountFunction();
-    });
+   
     db.ref("M_PropertyRent/").on("value", (resp) => {
       houseRent.value = snapshotToArray(resp);
       loading.value = false;
+      hcountFunction();
     });
 
     const hcount = computed(() => {
-      return house.value;
+      hcountFunction();
+      return house.value.filter((x) => x.isDeleted != "true");
     });
 
 
     function hcountFunction(){
+       db.ref("M_Property/").on("value", (resp) => {
+        house.value = snapshotToArray(resp);
+        loading.value = false;
+        
+       });
        db.ref("M_Property/").on("value", (resp) => {
         house.value = snapshotToArray(resp);
         loading.value = false;
@@ -370,6 +379,7 @@ export default {
         position: "top",
       });
       ResetProperty();
+      hcountFunction();
     }
 
     function confirm(key: string) {
@@ -388,6 +398,7 @@ export default {
       property.value.isDeleted = "true";
       db.ref("M_Property/").child(key).update(property.value);
       ResetProperty();
+      hcountFunction();
       $q.notify({
         message: "Successfully deleted property details",
         icon: "check",
@@ -428,6 +439,7 @@ export default {
         
         property.value = house.value.filter((x) => x.key == selKey)[0];
         property.value.propertyPic = selectedfileName.value;
+        property.value.propertyPicShow = "statics/loading.gif";
         db.ref("M_Property/").child(selKey).update(property.value);
         ResetProperty();
         hcountFunction();
@@ -456,7 +468,6 @@ export default {
  
 
     return {
-      pix,
       UploadFile,
       selectedfile,
       fileselected,

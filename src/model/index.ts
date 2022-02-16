@@ -48,13 +48,13 @@ export class TenantDetails{
   address = "";
   passportNo = "";
   alternativeContact = "";
-  coupleTenancy = "";
+  coupleTenancy = "No";
   weeklyAmountDue = "";
   currentDue = "";
   modeOfPayment = "";
   spouse: TenantDetails | undefined;
   isActive = "true";
-  weekDayDue = "";
+  weekDayDue = "Monday";
   bankAccount = "";
   startDate = "";
   isDeleted = false;

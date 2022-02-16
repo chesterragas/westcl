@@ -61,8 +61,8 @@
                 side
                 top
                 v-if="
-                  item.currentDue == item.weeklyAmountDue ||
-                  item.currentDue == 0
+                  item.currentDue == item.weeklyAmountDue
+                 
                 "
               >
                 Due: {{ item.currentDue }}
@@ -71,7 +71,7 @@
                 side
                 top
                 v-if="
-                  item.currentDue != item.weeklyAmountDue && item.currentDue > 0
+                  item.currentDue > item.weeklyAmountDue
                 "
               >
                 <p style="color: red">Overdue: {{ item.currentDue }}</p>
@@ -512,19 +512,19 @@
             <div class="col-12 col-md-5">
 
 
- <q-input label="Starting Date" required filled v-model="tenantDetails.startDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
-                <template v-slot:append>
-                  <q-icon name="event" class="cursor-pointer">
-                    <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                      <q-date minimal v-model="tenantDetails.startDate"  mask="DD/MM/YYYY">
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                      </div>
-                      </q-date>
-                    </q-popup-proxy>
-                  </q-icon>
-                </template>
-              </q-input>
+          <q-input label="Starting Date" readonly required filled v-model="tenantDetails.startDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
+            <template v-slot:append>
+              <q-icon name="event" class="cursor-pointer">
+                <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
+                  <q-date minimal v-model="tenantDetails.startDate"  mask="DD/MM/YYYY">
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Close" color="primary" flat />
+                  </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
 
          
             </div>
@@ -565,6 +565,7 @@
                   v-model="spouseDetails.firstName"
                   filled
                   label="First Name"
+                  required
                 ></q-input>
               </div>
               <div class="col-12 col-md-5">
@@ -572,6 +573,7 @@
                   v-model="spouseDetails.lastName"
                   filled
                   label="Last Name"
+                  required
                 ></q-input>
               </div>
             </div>
@@ -581,6 +583,7 @@
                   v-model="spouseDetails.mobileNo"
                   filled
                   label="Phone No"
+                  required
                 ></q-input>
               </div>
               <div class="col-12 col-md-5">
@@ -588,6 +591,7 @@
                   v-model="spouseDetails.email"
                   filled
                   label="Email"
+                  required
                 ></q-input>
               </div>
             </div>
@@ -598,6 +602,7 @@
                   v-model="spouseDetails.alternativeContact"
                   filled
                   label="Alternative Contact"
+                  required
                 ></q-input>
               </div>
               <div class="col-12 col-md-5">
@@ -605,6 +610,7 @@
                   v-model="spouseDetails.passportNo"
                   filled
                   label="Passport No"
+                  required
                 ></q-input>
               </div>
             </div>
@@ -984,19 +990,9 @@ export default {
                 paymentdays.forEach((paidDay) => {
                   paidDueAmount += parseInt(element.weeklyAmountDue);
                 });
-                console.log(paidAmount);
-                console.log(paidDueAmount);
-             
-            
                 element.currentDue = paidDueAmount - paidAmount;
                 dueTotal.value += element.currentDue;
                 db.ref("M_TenantDetails/").child(element.key).update(element);
-
-
-
-//NEW
-              
-
               }
             });
         });
@@ -1043,8 +1039,19 @@ export default {
       if (property.value.propertyNo == "") {
         window.location.href = "/";
       }
-      return tenants.value.filter(x=>x.isDeleted == false && x.isActive == "true");
+      tenants.value= tenants.value.filter(x=>x.isDeleted == false && x.isActive == "true");
+      return tenants.value = tenants.value.sort( compare );
     });
+
+    function compare( a:any, b:any ) {
+      if ( a.currentDue > b.currentDue ){
+        return -1;
+      }
+      if ( a.currentDue < b.currentDue ){
+        return 1;
+      }
+      return 0;
+    }
 
     const powerBillList = computed(() => {
       let powerbill = Bills.value.filter(
@@ -1130,6 +1137,7 @@ export default {
     function tenantModal() {
       addTenant.value = true;
       loading.value = true;
+      tenantDetails.value = new TenantDetails();
     }
     function ShowBillModal() {
       addBill.value = true;
@@ -1455,10 +1463,6 @@ export default {
         "Saturday",
         "Sunday",
       ]),
-       workorder: ref({
-				esDate: '',
-				efDate: ''
-       })
     };
   },
 };

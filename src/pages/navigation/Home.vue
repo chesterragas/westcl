@@ -43,6 +43,7 @@
               @change="fileselected"
             />
             <q-btn
+              v-if="goImage"
               class="glossy"
               color="green"
               icon="photo"
@@ -466,8 +467,9 @@ export default {
       //openURL(await fileurl);
     }
  
-
+    const goImage = ref(false);
     return {
+      goImage,
       UploadFile,
       selectedfile,
       fileselected,

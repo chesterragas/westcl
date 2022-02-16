@@ -134,7 +134,7 @@
          <div class="row">
           <div class="col-12 col-md-10 q-mt-xs q-mx-md">
          
-          <q-input label="Starting Date" :readonly="!isEdit" required filled v-model="tenant.startDate" mask="##/##/####">
+          <q-input label="Starting Date" readonly required filled v-model="tenant.startDate" mask="##/##/####">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy v-if="isEdit" ref="qDateProxy" transition-show="scale" transition-hide="scale">

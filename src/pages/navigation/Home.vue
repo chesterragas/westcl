@@ -180,11 +180,11 @@
             <div class="col-12 col-md-5">
 
 
- <q-input label="Date" required filled v-model="rentamount.rentDate" mask="##/##/####">
+          <q-input  q-input label="Date" required  readonly filled v-model="rentamount.rentDate" mask="##/##/####">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                      <q-date minimal v-model="rentamount.rentDate"  mask="DD/MM/YYYY" @update:model-value="$refs.qDateProxy.hide()">
+                      <q-date minimal required v-model="rentamount.rentDate"  mask="DD/MM/YYYY" @update:model-value="$refs.qDateProxy.hide()">
                      
                       </q-date>
                     </q-popup-proxy>
@@ -213,6 +213,7 @@
                 icon="save"
                 label="Save"
                 type="submit"
+                :disabled="!rentamount.rentDate"
               />
               <q-btn
                 color="blue"
@@ -283,6 +284,8 @@ export default {
     }
 
     function AddProperty() {
+      console.log(rentamount.value.rentDate);
+      if(rentamount.value.rentDate != ""){
       add.value = false;
       var pushProperty = db.ref("M_Property/").push(property.value);
       if(pushProperty.key != null){
@@ -300,6 +303,7 @@ export default {
         color: "green",
         position: "top",
       });
+      }
     }
 
     function EditProperty(key: string) {

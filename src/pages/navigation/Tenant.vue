@@ -512,14 +512,12 @@
             <div class="col-12 col-md-5">
 
 
-          <q-input label="Starting Date" readonly required filled v-model="tenantDetails.startDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
+          <q-input label="Starting Date" readonly required filled v-model="tenantDetails.startDate" mask="##/##/####">
             <template v-slot:append>
               <q-icon name="event" class="cursor-pointer">
                 <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                  <q-date minimal v-model="tenantDetails.startDate"  mask="DD/MM/YYYY">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
+                  <q-date minimal v-model="tenantDetails.startDate" mask="DD/MM/YYYY" @update:model-value="$refs.qDateProxy.hide()">
+                  
                   </q-date>
                 </q-popup-proxy>
               </q-icon>
@@ -618,7 +616,7 @@
 
           <div class="row justify-around q-mt-lg">
             <div class="q-pa-md q-gutter-sm justify-center">
-              <q-btn color="primary" icon="save" label="Save" type="submit" />
+              <q-btn :disabled="!tenantDetails.startDate" color="primary" icon="save" label="Save" type="submit" />
               <q-btn
                 color="amber"
                 icon="cancel"
@@ -644,7 +642,7 @@
           <div class="row justify-around">
             <div class="col-12 col-md-5">
 
-          <q-input label="Due Date" required filled v-model="bill.dueDate" mask="##/##/####">
+          <q-input label="Due Date" required readonly filled v-model="bill.dueDate" mask="##/##/####">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -744,7 +742,7 @@
 
           <div class="row justify-around q-mt-lg">
             <div class="q-pa-md q-gutter-sm justify-center">
-              <q-btn color="primary" icon="save" label="Save" type="submit" />
+              <q-btn :disabled="!bill.dueDate" color="primary" icon="save" label="Save" type="submit" />
               <q-btn
                 color="amber"
                 icon="cancel"
@@ -767,10 +765,7 @@
         <form >
           <div class="row justify-around">
             <div class="col-12 col-md-5">
-
-            
-
-              <q-input label="Date" required filled v-model="newRentAmountBank.rentDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
+              <q-input label="Date" required readonly filled v-model="newRentAmountBank.rentDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
@@ -816,7 +811,7 @@
        
           <div class="row justify-around q-mt-lg">
             <div class="q-pa-md q-gutter-sm justify-center">
-              <q-btn color="primary" icon="save" label="Save" type="button" @click="InsertRentAmount" />
+              <q-btn :disabled="!newRentAmountBank.rentDate" color="primary" icon="save" label="Save" type="button" @click="InsertRentAmount" />
               <q-btn
                 color="amber"
                 icon="cancel"

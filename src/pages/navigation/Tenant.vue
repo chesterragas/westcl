@@ -163,7 +163,7 @@
                 </template>
                 <template v-slot:bottom>
                   <div class="absolute-bottom-center">
-                    Due: {{ powerBillTotal }}
+                    Due amount: {{ powerBillTotal }}
                   </div>
                 </template>
               </q-table>
@@ -250,7 +250,7 @@
 
                 <template v-slot:bottom>
                   <div class="absolute-bottom-center">
-                    Due: {{ waterBillTotal }}
+                    Due amount: {{ waterBillTotal }}
                   </div>
                 </template>
               </q-table>
@@ -337,7 +337,7 @@
 
                 <template v-slot:bottom>
                   <div class="absolute-bottom-center">
-                    Due: {{ internetBillTotal }}
+                    Due amount: {{ internetBillTotal }}
                   </div>
                 </template>
               </q-table>

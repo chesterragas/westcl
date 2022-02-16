@@ -638,14 +638,11 @@
           <div class="row justify-around">
             <div class="col-12 col-md-5">
 
-          <q-input label="Due Date" required filled v-model="bill.dueDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
+          <q-input label="Due Date" required filled v-model="bill.dueDate" mask="##/##/####">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                      <q-date minimal v-model="bill.dueDate"  mask="DD/MM/YYYY">
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                      </div>
+                      <q-date minimal v-model="bill.dueDate"  mask="DD/MM/YYYY" @update:model-value="$refs.qDateProxy.hide()">
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
@@ -771,10 +768,8 @@
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                      <q-date minimal v-model="newRentAmountBank.rentDate"  mask="DD/MM/YYYY">
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                      </div>
+                      <q-date minimal v-model="newRentAmountBank.rentDate"  mask="DD/MM/YYYY" @update:model-value="$refs.qDateProxy.hide()">
+                      
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
@@ -981,8 +976,6 @@ export default {
                   (x) => new Date(x) >= new Date(dateObject)
                 );
                
-                console.log(paymentdays);
-                console.log(data.filter(x=>x.isDeleted == "false"));
                 let paidAmount = 0;
                 let paidDueAmount = 0;
                 data.filter(x=>x.isDeleted == "false").forEach((paidDay) => {
@@ -1476,6 +1469,10 @@ export default {
 }
 .notranslate material-icons q-icon {
   display: none;
+}
+
+.q-date__today{
+  background: #50c7ff !important;
 }
 </style>
 

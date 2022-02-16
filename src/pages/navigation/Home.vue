@@ -180,14 +180,12 @@
             <div class="col-12 col-md-5">
 
 
- <q-input label="Date" required filled v-model="rentamount.rentDate" mask="##/##/####" @input="() => $refs.qDateProxy.hide()">
+ <q-input label="Date" required filled v-model="rentamount.rentDate" mask="##/##/####">
                 <template v-slot:append>
                   <q-icon name="event" class="cursor-pointer">
                     <q-popup-proxy ref="qDateProxy" transition-show="scale" transition-hide="scale">
-                      <q-date minimal v-model="rentamount.rentDate"  mask="DD/MM/YYYY">
-                      <div class="row items-center justify-end">
-                        <q-btn v-close-popup label="Close" color="primary" flat />
-                      </div>
+                      <q-date minimal v-model="rentamount.rentDate"  mask="DD/MM/YYYY" @update:model-value="$refs.qDateProxy.hide()">
+                     
                       </q-date>
                     </q-popup-proxy>
                   </q-icon>
@@ -411,5 +409,9 @@ export default {
 
 ::-webkit-scrollbar {
   display: none;
+}
+
+.q-date__today{
+  background: #50c7ff !important;
 }
 </style>

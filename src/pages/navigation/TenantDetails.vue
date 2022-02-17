@@ -415,7 +415,7 @@
                 filled
                 label="Paid Amount"
                 v-model="payment.amount"
-                type="number"
+                mask="###########"
               ></q-input>
             </div>
           </div>

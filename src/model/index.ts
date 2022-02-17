@@ -5,7 +5,7 @@ export class RentAmount{
   agentName = "";
   propertyKey = "";
   propertyNo = "";
-  rentAmount =0;
+  rentAmount="";
   bankAccount = "";
   rentDate = "";
   updateDate = new Date().toLocaleDateString();
@@ -103,8 +103,8 @@ export class Bill{
   providerType = "";
   providerName = "";
   dueDate = "";
-  dueAmount = "0";
-  paidAmount = "0";
+  dueAmount = "";
+  paidAmount = "";
   fileUpload = "";
   createDate = new Date().toLocaleDateString();
   createUser = auth.currentUser?.email;

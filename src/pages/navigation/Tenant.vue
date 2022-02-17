@@ -502,7 +502,7 @@
                 v-model="tenantDetails.weeklyAmountDue"
                 filled
                 label="Weekly Amount Due"
-                type="number"
+                mask="###########"
                 required
               ></q-input>
             </div>
@@ -660,7 +660,7 @@
                 filled
                 required
                 label="Due Amount"
-                type="number"
+                mask="###########"
               ></q-input>
             </div>
           </div>
@@ -671,7 +671,7 @@
                 filled
                 required
                 label="Paid Amount"
-                type="number"
+                mask="###########"
               ></q-input>
             </div>
             <div class="col-12 col-md-5"></div>
@@ -783,7 +783,7 @@
                 filled
                 required
                 label="Rent Amount"
-                type="number"
+                mask="###########"
               ></q-input>
             </div>
           </div>

@@ -188,7 +188,7 @@
                 filled
                 required
                 label="Rent Amount"
-                type="number"
+                mask="###########"
               ></q-input>
             </div>
             <div class="col-12 col-md-5">
